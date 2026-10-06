@@ -7,6 +7,7 @@ import type { ServerStatus } from '@/state/server';
 import ContentContainer from '@/components/elements/ContentContainer';
 import Spinner from '@/components/elements/Spinner';
 import { dismissNotification, notifyHttpError, notifyServerError } from '@/plugins/notifications';
+import { copy } from '@/wss/copy';
 
 const reconnectErrors = ['jwt: exp claim is invalid', 'jwt: created too far in past (denylist)'];
 
@@ -50,7 +51,7 @@ export default function WebsocketHandler() {
             })
             .catch((error) => {
                 if (activeSocket.current === socket && activeUuid.current === uuid) {
-                    notifyHttpError(error, 'Failed to refresh server connection', { id: serverErrorToasts.token });
+                    notifyHttpError(error, copy.connection.refreshFailed, { id: serverErrorToasts.token });
                 }
             })
             .finally(() => {
@@ -73,7 +74,7 @@ export default function WebsocketHandler() {
             socket.on('SOCKET_CLOSE', () => setConnectionState(false));
             socket.on('SOCKET_CONNECT_ERROR', () => {
                 setReconnecting(false);
-                notifyServerError('Server connection failed', {
+                notifyServerError(copy.connection.lost, {
                     id: serverErrorToasts.connection,
                     description:
                         'Failed to connect to the websocket after multiple attempts. Reconnecting resumes once your network or this tab is active again.',
@@ -95,7 +96,7 @@ export default function WebsocketHandler() {
 
             socket.on('daemon error', (message) => {
                 console.warn('Got error message from daemon socket:', message);
-                notifyServerError('Server reported an error', {
+                notifyServerError(copy.connection.hostError, {
                     id: serverErrorToasts.daemon,
                     description: daemonErrorMessage(message),
                 });
@@ -111,7 +112,7 @@ export default function WebsocketHandler() {
                     updateToken(uuid, socket);
                 } else {
                     setReconnecting(false);
-                    notifyServerError('Server connection rejected', {
+                    notifyServerError(copy.connection.rejected, {
                         id: serverErrorToasts.jwt,
                         description:
                             'There was an error validating the credentials provided for the websocket. Please refresh the page.',
@@ -153,7 +154,7 @@ export default function WebsocketHandler() {
                 }
 
                 setReconnecting(false);
-                notifyHttpError(error, 'Failed to start server connection', { id: serverErrorToasts.token });
+                notifyHttpError(error, copy.connection.startFailed, { id: serverErrorToasts.token });
             });
 
         return () => {
@@ -176,9 +177,7 @@ export default function WebsocketHandler() {
         <div className={'bg-destructive py-2'}>
             <ContentContainer className={'flex items-center justify-center'}>
                 <Spinner size={'small'} />
-                <p className={'ml-2 text-sm text-destructive-foreground'}>
-                    We&apos;re having some trouble connecting to your server, please wait...
-                </p>
+                <p className={'ml-2 text-sm text-destructive-foreground'}>{copy.connection.reconnecting}</p>
             </ContentContainer>
         </div>
     ) : null;
