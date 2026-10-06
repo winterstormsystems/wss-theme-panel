@@ -71,8 +71,8 @@
     --wss-status-caution: color-mix(in oklab, var(--wss-status-warning) 55%, var(--wss-status-danger));
 
     /* ---- Panel layout, shape, typography, chrome ---- */
-    --layout-content-width: 80rem;
-    --layout-sidebar-width: 15rem;
+    --layout-content-width: 76rem; /* core 75rem; keeps gutters at 1280px with the sidebar */
+    --layout-sidebar-width: 13rem; /* narrow sidebar leaves room for core's console stat column */
     --radius: 0.5rem; /* application radius; the public site's 25px pills are intentionally not used */
     --font-sans: 'Inter Variable', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     --font-header: var(--font-sans);
