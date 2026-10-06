@@ -6,6 +6,7 @@ import { DialogContext } from './context';
 import DialogFooter from './DialogFooter';
 import type { IconPosition, RenderDialogProps } from './types';
 import { dialogTitleClass } from '@/components/ui/typography';
+import { useWssWording } from '@/wss';
 import { cn } from '@/lib/cn';
 
 const focusableSelector =
@@ -61,6 +62,10 @@ export default function DialogComponent({
     const footer = items.filter(isFooter);
     const content = items.filter((child) => !isFooter(child));
 
+    // WSS core patch: presentation wording inside the WSS shell (wss/panel/wording.ts).
+    const wording = useWssWording();
+    const say = (node: React.ReactNode) => (wording ? wording.node(node) : node);
+
     return (
         <DialogContext.Provider value={context}>
             {/* Base UI unmounts the popup after its data-ending-style transition finishes. */}
@@ -84,23 +89,23 @@ export default function DialogComponent({
                                                             'pr-4'
                                                         )}
                                                     >
-                                                        {title}
+                                                        {say(title)}
                                                     </BaseDialog.Title>
                                                 )}
                                                 {description && (
                                                     <BaseDialog.Description
                                                         className={'mb-5 text-sm leading-relaxed text-muted-foreground'}
                                                     >
-                                                        {description}
+                                                        {say(description)}
                                                     </BaseDialog.Description>
                                                 )}
                                             </div>
                                         </div>
-                                        {content}
+                                        {say(content)}
                                         <div className={'invisible h-6'} />
                                     </div>
                                 </div>
-                                {footer}
+                                {say(footer)}
                                 {/* Rendered after the other buttons so it is not the default focus. */}
                                 {!hideCloseIcon && (
                                     <div className={'absolute right-0 top-0 m-4'}>
@@ -108,6 +113,7 @@ export default function DialogComponent({
                                             type={'button'}
                                             size={'xsmall'}
                                             onClick={onClose}
+                                            aria-label={'Close'}
                                             className={'group w-8 h-8 p-0 inline-flex items-center justify-center'}
                                         >
                                             <X className={closeIconClass} />

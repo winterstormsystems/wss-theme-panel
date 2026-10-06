@@ -6,6 +6,7 @@ import Button from '@/components/elements/Button';
 import Icon from '@/components/elements/Icon';
 import NotFoundSvg from '@/assets/images/not_found.svg';
 import ServerErrorSvg from '@/assets/images/server_error.svg';
+import { useWssPrimitive } from '@/wss';
 
 interface BaseProps {
     title: string;
@@ -31,7 +32,7 @@ const ActionButton = ({ className, ...props }: React.ComponentProps<typeof Butto
     <Button className={cn('rounded-full w-8 h-8 flex items-center justify-center p-0', className)} {...props} />
 );
 
-const ScreenBlock = ({ title, image, message, onBack, onRetry }: ScreenBlockProps) => (
+const CoreScreenBlock = ({ title, image, message, onBack, onRetry }: ScreenBlockProps) => (
     <PageContentBlock>
         <div className={'flex justify-center'}>
             <div className={'w-full sm:w-3/4 md:w-1/2 p-12 md:p-20 bg-card rounded-lg shadow-lg text-center relative'}>
@@ -54,6 +55,20 @@ const ScreenBlock = ({ title, image, message, onBack, onRetry }: ScreenBlockProp
         </div>
     </PageContentBlock>
 );
+
+// WSS core patch: WSS state panel inside the WSS shell (wss/panel/ui/StateBlock.tsx).
+const ScreenBlock = ({ title, image, message, onBack, onRetry }: ScreenBlockProps) => {
+    const WssScreenBlock = useWssPrimitive<BaseProps>('ScreenBlock');
+    if (WssScreenBlock) {
+        return <WssScreenBlock title={title} image={image} message={message} onBack={onBack} onRetry={onRetry} />;
+    }
+
+    return onRetry ? (
+        <CoreScreenBlock title={title} image={image} message={message} onRetry={onRetry} />
+    ) : (
+        <CoreScreenBlock title={title} image={image} message={message} onBack={onBack} />
+    );
+};
 
 type ServerErrorProps = (Omit<PropsWithBack, 'image' | 'title'> | Omit<PropsWithRetry, 'image' | 'title'>) & {
     title?: string;
