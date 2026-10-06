@@ -1,9 +1,3 @@
-import { Outlet } from '@tanstack/react-router';
-
-export default function AuthLayout() {
-    return (
-        <div className={'pt-8 xl:pt-32'}>
-            <Outlet />
-        </div>
-    );
-}
+// WSS core patch: the authentication layout is owned by WSS (wss/panel/auth/AuthLayout.tsx).
+// Upstream version: see wss/core-patches.json.
+export { WssAuthLayout as default } from '@/wss/auth';
