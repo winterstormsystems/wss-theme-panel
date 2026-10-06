@@ -22,6 +22,14 @@ interface Live {
     state: string;
 }
 
+/** Fields of the primary allocation this page shows (from the server's allocations relationship). */
+interface AllocationAttributes {
+    is_default?: boolean;
+    ip?: string;
+    ip_alias?: string | null;
+    port?: number;
+}
+
 const mib = 1024 * 1024;
 
 function formatUptime(ms: number): string {
@@ -97,7 +105,7 @@ export default function OverviewScreen() {
     const uptime = live?.uptime ?? cached?.resources.uptime ?? 0;
 
     const allocations =
-        (relationships?.allocations as { data?: { attributes: Record<string, unknown> }[] } | undefined)?.data ?? [];
+        (relationships?.allocations as { data?: { attributes: AllocationAttributes }[] } | undefined)?.data ?? [];
     const primary = allocations.find((allocation) => allocation.attributes.is_default)?.attributes;
     const address = primary ? `${primary.ip_alias || primary.ip}:${primary.port}` : null;
 

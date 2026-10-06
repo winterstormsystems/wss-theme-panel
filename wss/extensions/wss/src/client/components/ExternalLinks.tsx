@@ -1,4 +1,4 @@
-import { NamedIcon } from '@pterodactyl/sdk';
+import { NamedIcon, type ExtensionConfigValue } from '@pterodactyl/sdk';
 
 export interface ExternalLink {
     label: string;
@@ -6,15 +6,24 @@ export interface ExternalLink {
     icon: string;
 }
 
-/** Only absolute HTTPS URLs are rendered; anything else is ignored rather than linked. */
-export function configuredLinks(config: Record<string, unknown>): ExternalLink[] {
+/** The extension settings this module reads (string settings declared in WssProvider). */
+export interface LinkSettings {
+    readonly billing_url?: ExtensionConfigValue;
+    readonly support_url?: ExtensionConfigValue;
+}
+
+/** Parses a setting into an absolute HTTPS URL, or null (anything else is ignored, not linked). */
+function httpsUrl(value: ExtensionConfigValue | undefined): string | null {
+    const text = value === null || value === undefined ? '' : String(value);
+    return /^https:\/\/\S+$/.test(text) ? text : null;
+}
+
+export function configuredLinks(config: LinkSettings): ExternalLink[] {
     const candidates = [
-        { label: 'Billing', href: config.billing_url, icon: 'credit-card' },
-        { label: 'Support', href: config.support_url, icon: 'life-buoy' },
+        { label: 'Billing', href: httpsUrl(config.billing_url), icon: 'credit-card' },
+        { label: 'Support', href: httpsUrl(config.support_url), icon: 'life-buoy' },
     ];
-    return candidates.flatMap((link) =>
-        typeof link.href === 'string' && /^https:\/\/\S+$/.test(link.href) ? [{ ...link, href: link.href }] : []
-    );
+    return candidates.flatMap((link) => (link.href ? [{ ...link, href: link.href }] : []));
 }
 
 /** `nav.items.after`: Billing / Support links in the customer sidebar, from extension settings. */
