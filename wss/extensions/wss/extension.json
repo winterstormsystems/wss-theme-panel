@@ -19,7 +19,19 @@
         "mode": "native",
         "prefix": "wss",
         "components": [
-            "dashboard.serverCard"
+            "dashboard.serverCard",
+            "server.files.manager"
+        ],
+        "screens": [
+            {
+                "id": "overview",
+                "area": "server",
+                "path": "overview",
+                "nav": {
+                    "label": "Overview",
+                    "icon": "layout-dashboard"
+                }
+            }
         ]
     }
 }

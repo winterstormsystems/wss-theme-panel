@@ -3,6 +3,8 @@
 namespace Wss;
 
 use Pterodactyl\Extensions\ExtensionProvider;
+use Pterodactyl\Services\Extensions\ExtensionSettingDefinition;
+use Pterodactyl\Services\Extensions\ExtensionSettingsDefinition;
 
 class WssProvider extends ExtensionProvider
 {
@@ -13,17 +15,29 @@ class WssProvider extends ExtensionProvider
 
     public function boot(): void
     {
-        // Mounts routes/client.php at /api/client/extensions/wss — and
-        // routes/server.php (per-server, at /api/client/servers/{server}/extensions/wss),
-        // routes/admin.php + routes/application.php at their prefixes when added.
+        // Mounts routes/client.php at /api/client/extensions/wss.
         $this->registerApiRoutes();
 
-        // Uncomment as the extension grows:
-        // $this->loadExtensionMigrations();
-        // $this->loadExtensionTranslations();
-        // $this->registerCommands([...]) and $this->registerSchedule(fn (Schedule $schedule) => ...)
-        // $this->wrapAction(Contract::class, fn (Contract $inner): Contract => new Wrapper($inner));
-        // $this->registerHeadTags([['tag' => 'meta', 'name' => 'theme-color', 'content' => '#0f172a']]);
-        // $this->registerRootRoutes(...) for prefixes claimed under "routes.root" in extension.json
+        // External links shown in the customer sidebar. Empty by default, so nothing is shown
+        // until an administrator configures them (Admin > Extensions > Winter Storm Systems).
+        // WHMS-lite will provide the billing portal; no URL is hardcoded here.
+        $this->registerSettings(new ExtensionSettingsDefinition($this->settings(), [
+            ExtensionSettingDefinition::make('billing_url', 'billing_url', '', ['nullable', 'string', 'url:https', 'max:255'])
+                ->label('Billing portal URL')
+                ->help('HTTPS link shown as "Billing" in the customer sidebar. Leave empty to hide it.')
+                ->frontend()
+                ->frontendType('string'),
+            ExtensionSettingDefinition::make('support_url', 'support_url', '', ['nullable', 'string', 'url:https', 'max:255'])
+                ->label('Support URL')
+                ->help('HTTPS link shown as "Support" in the customer sidebar. Leave empty to hide it.')
+                ->frontend()
+                ->frontendType('string'),
+        ]));
+
+        // WSS favicons and app icons, served from the WSS theme assets (php artisan p:theme:apply wss).
+        $this->registerHeadTags([
+            ['tag' => 'link', 'rel' => 'icon', 'type' => 'image/png', 'sizes' => '32x32', 'href' => '/assets/theme/brand/favicon-32.png'],
+            ['tag' => 'link', 'rel' => 'apple-touch-icon', 'sizes' => '180x180', 'href' => '/assets/theme/brand/apple-touch-icon.png'],
+        ]);
     }
 }

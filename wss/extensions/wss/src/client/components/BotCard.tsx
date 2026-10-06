@@ -104,7 +104,7 @@ export default function BotCard({ model }: Props) {
                     'wss:inline-flex wss:shrink-0 wss:items-center wss:gap-1 wss:self-end wss:text-sm wss:font-medium wss:text-brand wss:md:self-auto'
                 }
             >
-                {terms.manage}
+                {terms.manageBot}
                 <NamedIcon name={'chevron-right'} size={16} />
             </span>
         </div>
