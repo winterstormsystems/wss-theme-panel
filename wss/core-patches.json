@@ -1,0 +1,117 @@
+{
+    "description": "Upstream (Pterodactyl) files modified by WSS. Kinds: 'reexport' = file replaced by a one-line re-export of a WSS module; 'branch' = small conditional added, upstream code kept; 'strings' = literals swapped for wss/panel/terminology.ts constants. upstreamBlob = git blob of the file the patch was made against. Check with: node wss/dev/check-core-patches.mjs [upstream-ref].",
+    "bridge": {
+        "path": "resources/scripts/wss/",
+        "note": "New WSS-owned files inside the upstream tree (not in upstream, so they never conflict). index.ts is self-contained because SDK-exported components import it and SDK type generation uses rootDir resources/scripts."
+    },
+    "patches": [
+        {
+            "path": "resources/scripts/router/layouts/AuthenticatedLayout.tsx",
+            "kind": "branch",
+            "purpose": "Customer routes render the WSS application shell (sidebar, top bar, drawer, footer) instead of NavigationBar; /panel keeps core's layout.",
+            "owner": "wss/panel/shell/AppShell.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "e4faf93344cc6e155fd3e0085a1bba4b47cf08e1"
+        },
+        {
+            "path": "resources/scripts/components/elements/SubNavigationLayout.tsx",
+            "kind": "branch",
+            "purpose": "Inside the WSS shell, the account/bot area is laid out by the WSS workspace (bot header, power controls, sidebar section navigation, mobile tabs); core's tab bar is not rendered.",
+            "owner": "wss/panel/workspace/WorkspaceLayout.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "0ce5e3b093bac4f588eb07f5a82eab78339f7cb1"
+        },
+        {
+            "path": "resources/scripts/components/elements/PageContentBlock.tsx",
+            "kind": "branch",
+            "purpose": "Hides the stock 'Pterodactyl (c)' footer inside the WSS shell, which renders its own footer.",
+            "owner": "wss/panel/shell/Footer.tsx",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "65cf8bfbb8536b1caae2b317610ad2e5b6182fe3"
+        },
+        {
+            "path": "resources/scripts/components/elements/TitledGreyBox.tsx",
+            "kind": "branch",
+            "purpose": "Inside the WSS shell, renders boxes as WSS panels (bordered card, sentence-case title) instead of grey uppercase header bars.",
+            "owner": "resources/scripts/wss/index.ts (useInWssShell)",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "1b4d91dc4194a995b3be8de62cb47e9debf1c5d5"
+        },
+        {
+            "path": "resources/scripts/router/layouts/AuthLayout.tsx",
+            "kind": "reexport",
+            "purpose": "Authentication layout owned by WSS (brand panel on the gradient, form column).",
+            "owner": "wss/panel/auth/AuthLayout.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "c8308dc1da4014df3e78206f098cc58d976030fa"
+        },
+        {
+            "path": "resources/scripts/components/auth/LoginFormContainer.tsx",
+            "kind": "reexport",
+            "purpose": "Auth form card owned by WSS: same props and Form wrapper, no mascot or Pterodactyl footer.",
+            "owner": "wss/panel/auth/AuthCard.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "289a5c6e93927c6689fbe2299866c7a0aeec0d86"
+        },
+        {
+            "path": "resources/scripts/components/server/console/ServerConsoleContainer.tsx",
+            "kind": "reexport",
+            "purpose": "Console page composition owned by WSS (terminal first, live resource panel, history graphs); core Console, StatGraphs, Features and console slots are reused.",
+            "owner": "wss/panel/console/ConsoleWorkspace.tsx",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "d216437b56b69ba950f18d9f5fc6586a3bd9364e"
+        },
+        {
+            "path": "resources/scripts/components/server/settings/SettingsContainer.tsx",
+            "kind": "reexport",
+            "purpose": "Settings page composition owned by WSS (Bot details, SFTP, technical details, danger zone); core RenameServerBox and ReinstallServerBox are reused.",
+            "owner": "wss/panel/settings/SettingsWorkspace.tsx",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "c6fc9eb462f469ec7f0121eb617ab85d5b26b4d8"
+        },
+        {
+            "path": "resources/scripts/components/dashboard/DashboardContainer.tsx",
+            "kind": "strings",
+            "purpose": "'Servers' heading, admin toggle and empty-state wording replaced with WSS copy (My Bots, ...); empty-state icon Server -> Bot.",
+            "owner": "wss/panel/terminology.ts (copy.dashboard)",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "f38508d601ec7cf773091b5e41d33efc877f83a7"
+        },
+        {
+            "path": "resources/scripts/components/dashboard/search/SearchModal.tsx",
+            "kind": "strings",
+            "purpose": "Search dialog wording (Search bots, No bots found).",
+            "owner": "wss/panel/terminology.ts (copy.search)",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "775b49632437aa8c7e2909dceba85aa4989fd9b9"
+        },
+        {
+            "path": "resources/scripts/components/server/settings/RenameServerBox.tsx",
+            "kind": "strings",
+            "purpose": "Bot Details / Bot Name / Bot Description wording.",
+            "owner": "wss/panel/terminology.ts (copy.settings)",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "455583f5af4d702030bd27778ccbccf112c8d9dd"
+        },
+        {
+            "path": "resources/scripts/components/server/settings/ReinstallServerBox.tsx",
+            "kind": "strings",
+            "purpose": "Reinstall Bot wording, explanation and confirmation dialog text.",
+            "owner": "wss/panel/terminology.ts (copy.settings)",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "98c99cc70d3576232ded3026bb4d89c10fb119da"
+        }
+    ]
+}

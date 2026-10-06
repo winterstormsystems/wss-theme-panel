@@ -61,7 +61,7 @@ await step('login', async () => {
 
 await step('dashboard shows the bot card', async () => {
     await page.getByRole('link', { name: botName }).waitFor({ timeout: 15000 });
-    await page.getByText('Welcome back').waitFor();
+    await page.getByRole('heading', { name: 'My Bots' }).waitFor();
 });
 
 await step('bot page opens from the card', async () => {
@@ -123,17 +123,18 @@ await step('file manager lists files', async () => {
 await page.screenshot({ path: `${out}/regression-files.png` });
 
 await step('account navigation', async () => {
-    await page.getByRole('link', { name: 'Account Settings' }).click();
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Account' }).click();
     await page.waitForURL(/\/account$/);
 });
 
 await step('dashboard navigation', async () => {
-    await page.getByRole('link', { name: 'Dashboard' }).click();
+    await page.getByRole('link', { name: 'My Bots' }).click();
     await page.getByRole('link', { name: botName }).waitFor({ timeout: 15000 });
 });
 
 await step('logout', async () => {
-    await page.getByRole('button', { name: 'Sign Out' }).click();
+    await page.getByRole('button', { name: /Open account menu/ }).click();
+    await page.getByRole('menuitem', { name: 'Sign out' }).click();
     await page.waitForURL(/\/auth\/login/, { timeout: 15000 });
 });
 
