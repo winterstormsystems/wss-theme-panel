@@ -35,7 +35,7 @@
         {
             "path": "resources/scripts/components/elements/TitledGreyBox.tsx",
             "kind": "branch",
-            "purpose": "Inside the WSS shell, renders boxes as WSS panels (bordered card, sentence-case title) instead of grey uppercase header bars.",
+            "purpose": "Inside the WSS shell, boxes render as WSS panels (border, sentence-case title) and their core-authored title and body text pass through presentation wording (phase 4: replaces the RenameServerBox strings seam).",
             "owner": "resources/scripts/wss/index.ts (useInWssShell)",
             "conflictRisk": "medium",
             "upstreamBase": "origin/2.0-develop@41150ca9f",
@@ -94,15 +94,6 @@
             "conflictRisk": "low",
             "upstreamBase": "origin/2.0-develop@41150ca9f",
             "upstreamBlob": "775b49632437aa8c7e2909dceba85aa4989fd9b9"
-        },
-        {
-            "path": "resources/scripts/components/server/settings/RenameServerBox.tsx",
-            "kind": "strings",
-            "purpose": "Bot Details / Bot Name / Bot Description wording.",
-            "owner": "wss/panel/terminology.ts (copy.settings)",
-            "conflictRisk": "low",
-            "upstreamBase": "origin/2.0-develop@41150ca9f",
-            "upstreamBlob": "455583f5af4d702030bd27778ccbccf112c8d9dd"
         },
         {
             "path": "resources/scripts/components/server/settings/ReinstallServerBox.tsx",
@@ -177,25 +168,6 @@
             "upstreamBlob": "3f05dbbb0b236b4bd6e499674715deca2bad0647"
         },
         {
-            "path": "resources/scripts/components/server/console/PowerButtons.tsx",
-            "kind": "style",
-            "purpose": "Start uses the success colour (Start green, Restart neutral, Stop red). One attribute; power behaviour unchanged.",
-            "owner": "themes/wss (success colour)",
-            "conflictRisk": "low",
-            "upstreamBase": "origin/2.0-develop@41150ca9f",
-            "upstreamBlob": "ddc67a2c2a9ddb835f6af15b3df2ebae4f39f6e9",
-            "marker": "color={'green'}"
-        },
-        {
-            "path": "resources/scripts/components/server/console/StatGraphs.tsx",
-            "kind": "strings",
-            "purpose": "Graph titles: CPU Usage, Memory Usage, Network Traffic.",
-            "owner": "copy.graphs",
-            "conflictRisk": "low",
-            "upstreamBase": "origin/2.0-develop@41150ca9f",
-            "upstreamBlob": "521520a14585164012cf8e82d39760774943ad48"
-        },
-        {
             "path": "resources/scripts/components/server/startup/StartupContainer.tsx",
             "kind": "strings",
             "purpose": "Launch Command, Runtime Image, image help/locked text, Environment Variables heading, empty state.",
@@ -203,15 +175,6 @@
             "conflictRisk": "medium",
             "upstreamBase": "origin/2.0-develop@41150ca9f",
             "upstreamBlob": "5aa2feb60e4ae35bb27ac69b13d3ad8c6d827f48"
-        },
-        {
-            "path": "resources/scripts/components/auth/LoginContainer.tsx",
-            "kind": "strings",
-            "purpose": "Submit button reads \"Sign in\".",
-            "owner": "copy.auth.signIn",
-            "conflictRisk": "low",
-            "upstreamBase": "origin/2.0-develop@41150ca9f",
-            "upstreamBlob": "c40a0e500e89eed386813fae5d47c0e490e39513"
         },
         {
             "path": "resources/scripts/components/server/users/AddSubuserButton.tsx",
@@ -240,6 +203,42 @@
             "upstreamBase": "origin/2.0-develop@41150ca9f",
             "upstreamBlob": "f2cd5b292cdf3577e02bdcd23e0f0ed5d5e32780",
             "marker": "wss/panel"
+        },
+        {
+            "path": "resources/scripts/components/server/console/ChartBlock.tsx",
+            "kind": "branch",
+            "purpose": "Console performance cards render as WSS cards with WSS titles (CPU Usage, Memory Usage, Network Traffic) and an offline note; chart and data unchanged. Replaces the phase 3 StatGraphs strings seam.",
+            "owner": "wss/panel/ui/ChartBlock.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "0ee378d324be0fb03aa678c201d0c143a51f23d9"
+        },
+        {
+            "path": "resources/scripts/components/server/schedules/ScheduleEditContainer.tsx",
+            "kind": "reexport",
+            "purpose": "Schedule detail page as a WSS composition: status badges, last/next run from the API, cron fields as stored, tasks card; core query, task columns and actions reused.",
+            "owner": "wss/panel/schedules/ScheduleDetail.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "c267e583781147465d65a6956a8524864089c6f0"
+        },
+        {
+            "path": "resources/scripts/components/server/WebsocketHandler.tsx",
+            "kind": "strings",
+            "purpose": "Connection toast titles and the reconnecting banner in WSS wording (\"Unable to connect to this bot\"); descriptions (HTTP/Wings details), retries and reconnect logic unchanged.",
+            "owner": "copy.connection",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "efff15e958ebacbe797eb15ea9c77aa13b171383"
+        },
+        {
+            "path": "resources/scripts/components/form/fields.tsx",
+            "kind": "branch",
+            "purpose": "Inside the WSS shell, field labels, help text and validation messages pass through presentation wording (e.g. \"Server Name\" -> \"Bot Name\", \"server directory\" -> \"bot directory\"). Replaces the phase 3 RenameServerBox strings seam.",
+            "owner": "wss/panel/wording.ts",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "f7883533b22a3b607c173f026faa23ba43a83eaf"
         }
     ],
     "styleDependencies": {
@@ -291,6 +290,13 @@
                     "resources/scripts/components/elements/Button.tsx",
                     "resources/scripts/components/elements/Label.tsx"
                 ]
+            },
+            {
+                "token": "<Button\n                    className={'flex-1'}",
+                "files": [
+                    "resources/scripts/components/server/console/PowerButtons.tsx"
+                ],
+                "note": "Start must keep core's default (primary) colour: wss/panel/workspace/BotHeader.tsx scopes --primary to the success colour around PowerButtons."
             }
         ]
     }
