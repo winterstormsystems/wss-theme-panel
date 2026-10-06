@@ -1,18 +1,29 @@
 import './styles.css';
 import { definePterodactylExtension } from '@pterodactyl/sdk';
+import DashboardOverview from './components/DashboardOverview';
+import LoginBrand from './components/LoginBrand';
 
 /**
- * WSS Bot Hosting extension entry.
- *
- * Intentionally registers nothing yet: this is the foundation only. The redesign adds
- * its pieces here through the SDK's supported extension points, never by editing core:
- *
- * - components.replace('dashboard.serverCard', ...)   bot cards on the dashboard
- * - slots.register('dashboard.before' | 'nav.items.after' | 'server.console.*', ...)
- * - screens.register(id, importer)                    bot pages, declared in extension.json ui.screens
- *
- * See wss/README.md in the panel repository for the plan.
+ * WSS Bot Hosting extension entry. Everything here goes through the SDK's supported
+ * extension points; core is never edited. See wss/docs/ARCHITECTURE.md.
  */
+/**
+ * Sidebar sub-navigation (documented SDK switch, `lg` and up) for the account and bot areas.
+ * Off for now: with a sidebar, core's console stat column truncates values (address port,
+ * memory limit) at laptop widths, and the console layout is not redesigned in this phase.
+ * Turn on together with the bot detail redesign. See wss/docs/ARCHITECTURE.md ("Shell").
+ */
+const SIDE_NAVIGATION = false;
+
 export default definePterodactylExtension({
-    setup() {},
+    setup({ slots, components }) {
+        if (SIDE_NAVIGATION) document.documentElement.dataset.subNavigation = 'side';
+
+        // Dashboard
+        components.replace('dashboard.serverCard', { load: () => import('./components/BotCard') });
+        slots.register('dashboard.before', DashboardOverview);
+
+        // Login identity
+        slots.register('auth.login.before', LoginBrand);
+    },
 });
