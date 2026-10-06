@@ -29,7 +29,11 @@ function formatUptime(ms: number): string {
     const days = Math.floor(total / 86400);
     const hours = Math.floor((total % 86400) / 3600);
     const minutes = Math.floor((total % 3600) / 60);
-    return days > 0 ? `${days}d ${hours}h ${minutes}m` : hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m ${total % 60}s`;
+    return days > 0
+        ? `${days}d ${hours}h ${minutes}m`
+        : hours > 0
+          ? `${hours}h ${minutes}m`
+          : `${minutes}m ${total % 60}s`;
 }
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
@@ -45,7 +49,9 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
     return (
         <div className={'wss:flex wss:items-baseline wss:justify-between wss:gap-3 wss:py-1.5 wss:text-sm'}>
             <dt className={'wss:text-muted-foreground'}>{label}</dt>
-            <dd className={'wss:min-w-0 wss:truncate wss:text-right wss:font-medium wss:text-foreground'}>{children}</dd>
+            <dd className={'wss:min-w-0 wss:truncate wss:text-right wss:font-medium wss:text-foreground'}>
+                {children}
+            </dd>
         </div>
     );
 }
@@ -90,7 +96,8 @@ export default function OverviewScreen() {
     const tx = live?.tx ?? cached?.resources.network_tx_bytes ?? 0;
     const uptime = live?.uptime ?? cached?.resources.uptime ?? 0;
 
-    const allocations = (relationships?.allocations as { data?: { attributes: Record<string, unknown> }[] } | undefined)?.data ?? [];
+    const allocations =
+        (relationships?.allocations as { data?: { attributes: Record<string, unknown> }[] } | undefined)?.data ?? [];
     const primary = allocations.find((allocation) => allocation.attributes.is_default)?.attributes;
     const address = primary ? `${primary.ip_alias || primary.ip}:${primary.port}` : null;
 
@@ -102,7 +109,10 @@ export default function OverviewScreen() {
                         {resources.isPending && !live ? (
                             <div className={'wss:grid wss:gap-4 wss:sm:grid-cols-3'} aria-hidden={'true'}>
                                 {[0, 1, 2].map((key) => (
-                                    <div key={key} className={'wss:h-10 wss:animate-pulse wss:rounded-md wss:bg-muted'} />
+                                    <div
+                                        key={key}
+                                        className={'wss:h-10 wss:animate-pulse wss:rounded-md wss:bg-muted'}
+                                    />
                                 ))}
                             </div>
                         ) : (
@@ -133,10 +143,14 @@ export default function OverviewScreen() {
                                 />
                             </div>
                         )}
-                        <dl className={'wss:mt-5 wss:grid wss:gap-x-8 wss:border-t wss:border-border wss:pt-3 wss:sm:grid-cols-3'}>
-                            <Fact label={'Uptime'}>{running && uptime > 0 ? formatUptime(uptime) : 'Offline'}</Fact>
-                            <Fact label={'Network in'}>{running ? formatBytes(rx) : 'Offline'}</Fact>
-                            <Fact label={'Network out'}>{running ? formatBytes(tx) : 'Offline'}</Fact>
+                        <dl
+                            className={
+                                'wss:mt-5 wss:grid wss:gap-x-8 wss:border-t wss:border-border wss:pt-3 wss:sm:grid-cols-3'
+                            }
+                        >
+                            <Fact label={'Uptime'}>{running && uptime > 0 ? formatUptime(uptime) : '—'}</Fact>
+                            <Fact label={'Network in'}>{running ? formatBytes(rx) : '—'}</Fact>
+                            <Fact label={'Network out'}>{running ? formatBytes(tx) : '—'}</Fact>
                         </dl>
                         {resources.isError && !live && (
                             <p className={'wss:mt-3 wss:text-xs wss:text-muted-foreground'}>
@@ -159,9 +173,27 @@ export default function OverviewScreen() {
             </div>
             <nav aria-label={'Quick links'} className={'wss:mt-4 wss:grid wss:gap-3 wss:sm:grid-cols-3'}>
                 {[
-                    { show: true, to: '/server/$id' as const, label: 'Open console', hint: `Live output and commands`, icon: 'square-terminal' },
-                    { show: canFiles, to: '/server/$id/files' as const, label: 'Manage files', hint: `Edit and upload your ${lower('bot')}'s code`, icon: 'folder-open' },
-                    { show: canRuntime, to: '/server/$id/startup' as const, label: `${terms.runtime} settings`, hint: 'Startup command and variables', icon: 'sliders-horizontal' },
+                    {
+                        show: true,
+                        to: '/server/$id' as const,
+                        label: 'Open console',
+                        hint: `Live output and commands`,
+                        icon: 'square-terminal',
+                    },
+                    {
+                        show: canFiles,
+                        to: '/server/$id/files' as const,
+                        label: 'Manage files',
+                        hint: `Edit and upload your ${lower('bot')}'s code`,
+                        icon: 'folder-open',
+                    },
+                    {
+                        show: canRuntime,
+                        to: '/server/$id/startup' as const,
+                        label: `${terms.runtime} settings`,
+                        hint: 'Launch command and variables',
+                        icon: 'sliders-horizontal',
+                    },
                 ]
                     .filter((link) => link.show)
                     .map((link) => (
@@ -172,12 +204,20 @@ export default function OverviewScreen() {
                                 'wss:group wss:flex wss:items-center wss:gap-3 wss:rounded-lg wss:border wss:border-border wss:bg-card wss:p-4 wss:no-underline wss:transition-colors wss:hover:border-primary/60 wss:hover:bg-secondary'
                             }
                         >
-                            <span className={'wss:flex wss:size-9 wss:items-center wss:justify-center wss:rounded-md wss:bg-background wss:text-brand'}>
+                            <span
+                                className={
+                                    'wss:flex wss:size-9 wss:items-center wss:justify-center wss:rounded-md wss:bg-background wss:text-brand'
+                                }
+                            >
                                 <NamedIcon name={link.icon} size={18} aria-hidden={'true'} />
                             </span>
                             <span className={'wss:min-w-0'}>
-                                <span className={'wss:block wss:text-sm wss:font-medium wss:text-foreground'}>{link.label}</span>
-                                <span className={'wss:block wss:truncate wss:text-xs wss:text-muted-foreground'}>{link.hint}</span>
+                                <span className={'wss:block wss:text-sm wss:font-medium wss:text-foreground'}>
+                                    {link.label}
+                                </span>
+                                <span className={'wss:block wss:truncate wss:text-xs wss:text-muted-foreground'}>
+                                    {link.hint}
+                                </span>
                             </span>
                         </PanelLink>
                     ))}

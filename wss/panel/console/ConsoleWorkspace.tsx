@@ -6,6 +6,8 @@ import Console from '@/components/server/console/Console';
 import StatGraphs from '@/components/server/console/StatGraphs';
 import Slot from '@/extensions/Slot';
 import Features from '@feature/Features';
+import { PowerOff } from 'lucide-react';
+import { useServerStatus } from '@/state/server';
 import { lower } from '../terminology';
 import ResourcePanel from './ResourcePanel';
 
@@ -24,6 +26,7 @@ export default function ConsoleWorkspace({ active = true }: { active?: boolean }
         egg_features,
     } = server.attributes;
     const installing = status === 'installing' || status === 'install_failed';
+    const offline = useServerStatus() === 'offline';
 
     return (
         <ServerContentBlock title={active ? 'Console' : undefined}>
@@ -41,9 +44,21 @@ export default function ConsoleWorkspace({ active = true }: { active?: boolean }
                 {/* Core makes the terminal full-bleed below `sm` (negative margins), so only frame it from `sm` up. */}
                 <div
                     className={
-                        'flex min-h-[26rem] min-w-0 sm:overflow-hidden sm:rounded-lg sm:border sm:border-border lg:min-h-[32rem]'
+                        'flex min-h-[26rem] min-w-0 flex-col sm:overflow-hidden [&>*:last-child]:flex-1 sm:rounded-lg sm:border sm:border-border lg:min-h-[32rem]'
                     }
                 >
+                    {/* Presentation only: a strip above the terminal, which keeps its own lifecycle and output. */}
+                    {offline && (
+                        <p
+                            role={'status'}
+                            className={
+                                'flex items-center gap-2 border-b border-border bg-card px-4 py-2.5 text-sm text-muted-foreground'
+                            }
+                        >
+                            <PowerOff aria-hidden className={'size-4 shrink-0 text-destructive'} />
+                            {`This ${lower('bot')} is offline. Start it to view live console output.`}
+                        </p>
+                    )}
                     <Spinner.Suspense>
                         <Console />
                     </Spinner.Suspense>

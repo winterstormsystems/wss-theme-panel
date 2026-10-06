@@ -11,6 +11,7 @@ import { bytesToString } from '@/lib/formatters';
 import { CloudDownload, CloudUpload } from 'lucide-react';
 import ChartBlock from '@/components/server/console/ChartBlock';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
+import { copy } from '@/wss/copy';
 
 const CYAN = 'var(--chart-1)';
 const YELLOW = 'var(--chart-2)';
@@ -66,7 +67,7 @@ export default function StatGraphs() {
 
     return (
         <>
-            <ChartBlock title={'CPU Load'}>
+            <ChartBlock title={copy.graphs.cpu}>
                 <AreaChart
                     data={cpuData}
                     series={CPU_SERIES}
@@ -76,7 +77,7 @@ export default function StatGraphs() {
                     tickFormatter={(value) => `${value.toFixed(2)}%`}
                 />
             </ChartBlock>
-            <ChartBlock title={'Memory'}>
+            <ChartBlock title={copy.graphs.memory}>
                 <AreaChart
                     data={memoryData}
                     series={MEMORY_SERIES}
@@ -87,7 +88,7 @@ export default function StatGraphs() {
                 />
             </ChartBlock>
             <ChartBlock
-                title={'Network'}
+                title={copy.graphs.network}
                 legend={
                     <>
                         <Tooltip arrow content={'Inbound'}>

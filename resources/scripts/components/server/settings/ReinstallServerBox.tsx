@@ -2,7 +2,7 @@ import TitledGreyBox from '@/components/elements/TitledGreyBox';
 import Button from '@/components/elements/Button';
 import { Dialog } from '@/components/elements/dialog';
 import { useCurrentServer, useReinstallServer } from '@/api/server/queries';
-import { canReinstallServer, SKIPPED_INSTALL_SCRIPT_MESSAGE } from '@/lib/serverStatus';
+import { canReinstallServer } from '@/lib/serverStatus';
 import { copy } from '@/wss/copy';
 
 const ReinstallServerBox = () => {
@@ -25,7 +25,9 @@ const ReinstallServerBox = () => {
                 {copy.settings.reinstallBody}&nbsp;
                 <strong className={'font-medium'}>{copy.settings.reinstallWarning}</strong>
             </p>
-            {!canReinstall && <p className={'mt-3 text-sm text-muted-foreground'}>{SKIPPED_INSTALL_SCRIPT_MESSAGE}</p>}
+            {!canReinstall && (
+                <p className={'mt-3 text-sm text-muted-foreground'}>{copy.settings.reinstallUnavailable}</p>
+            )}
             <Dialog.ConfirmTrigger
                 title={copy.settings.reinstallConfirmTitle}
                 confirm={copy.settings.reinstallConfirm}

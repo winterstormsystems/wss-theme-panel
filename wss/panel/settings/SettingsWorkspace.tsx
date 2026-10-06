@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { TriangleAlert } from 'lucide-react';
 import { useCurrentUser } from '@/api/account/queries';
 import { useCurrentServer } from '@/api/server/queries';
 import Button from '@/components/elements/Button';
@@ -11,16 +11,7 @@ import ReinstallServerBox from '@/components/server/settings/ReinstallServerBox'
 import RenameServerBox from '@/components/server/settings/RenameServerBox';
 import { ip } from '@/lib/formatters';
 import { copy } from '../terminology';
-
-function Panel({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
-    return (
-        <section className={'rounded-lg border border-border bg-card p-5'}>
-            <h3 className={'text-sm font-semibold text-foreground'}>{title}</h3>
-            {description && <p className={'mt-1 text-sm text-muted-foreground'}>{description}</p>}
-            <div className={'mt-4'}>{children}</div>
-        </section>
-    );
-}
+import Card from '../ui/Card';
 
 /**
  * Settings page composition (replaces core's SettingsContainer via a one-line seam). The rename
@@ -41,20 +32,25 @@ export default function SettingsWorkspace() {
                         <RenameServerBox />
                     </Can>
                     <Can action={'file.sftp'}>
-                        <Panel
+                        <Card
                             title={'SFTP access'}
                             description={'Your SFTP password is the same password you use to sign in here.'}
                         >
                             <div>
-                                <Label>{copy.settings.sftpAddress}</Label>
+                                <Label htmlFor={'wss-sftp-address'}>{copy.settings.sftpAddress}</Label>
                                 <CopyOnClick text={sftpUrl}>
-                                    <TextInput type={'text'} value={sftpUrl} readOnly />
+                                    <TextInput id={'wss-sftp-address'} type={'text'} value={sftpUrl} readOnly />
                                 </CopyOnClick>
                             </div>
                             <div className={'mt-4'}>
-                                <Label>Username</Label>
+                                <Label htmlFor={'wss-sftp-username'}>Username</Label>
                                 <CopyOnClick text={`${username}.${id}`}>
-                                    <TextInput type={'text'} value={`${username}.${id}`} readOnly />
+                                    <TextInput
+                                        id={'wss-sftp-username'}
+                                        type={'text'}
+                                        value={`${username}.${id}`}
+                                        readOnly
+                                    />
                                 </CopyOnClick>
                             </div>
                             <div className={'mt-4 text-right'}>
@@ -62,11 +58,11 @@ export default function SettingsWorkspace() {
                                     <Button.Text isSecondary>Launch SFTP</Button.Text>
                                 </a>
                             </div>
-                        </Panel>
+                        </Card>
                     </Can>
                 </div>
                 <div className={'space-y-6'}>
-                    <Panel title={'Technical details'}>
+                    <Card title={'Technical details'}>
                         <dl className={'space-y-2 text-sm'}>
                             <div className={'flex items-center justify-between gap-3'}>
                                 <dt className={'text-muted-foreground'}>Node</dt>
@@ -74,32 +70,32 @@ export default function SettingsWorkspace() {
                                     <code className={'rounded-sm bg-muted px-2 py-1 font-mono text-xs'}>{node}</code>
                                 </dd>
                             </div>
-                            <CopyOnClick text={uuid}>
-                                <div className={'flex items-center justify-between gap-3'}>
-                                    <dt className={'text-muted-foreground'}>{copy.settings.botId}</dt>
-                                    <dd className={'min-w-0'}>
+                            <div className={'flex items-center justify-between gap-3'}>
+                                <dt className={'text-muted-foreground'}>{copy.settings.botId}</dt>
+                                <dd className={'min-w-0'}>
+                                    <CopyOnClick text={uuid}>
                                         <code
                                             className={'block truncate rounded-sm bg-muted px-2 py-1 font-mono text-xs'}
                                         >
                                             {uuid}
                                         </code>
-                                    </dd>
-                                </div>
-                            </CopyOnClick>
+                                    </CopyOnClick>
+                                </dd>
+                            </div>
                         </dl>
-                    </Panel>
+                    </Card>
                     <Can action={'settings.reinstall'}>
                         <section
                             aria-labelledby={'wss-danger-zone'}
-                            className={'rounded-lg border border-destructive/40 p-1'}
+                            className={
+                                '[&>div]:border-destructive/45 [&_button]:border-destructive/60 [&_button]:text-destructive'
+                            }
                         >
                             <h3
                                 id={'wss-danger-zone'}
-                                className={
-                                    'px-4 pb-1 pt-3 text-xs font-semibold uppercase tracking-wider text-destructive'
-                                }
+                                className={'mb-2 flex items-center gap-2 text-sm font-semibold text-destructive'}
                             >
-                                Danger zone
+                                <TriangleAlert aria-hidden className={'size-4'} /> Danger zone
                             </h3>
                             <ReinstallServerBox />
                         </section>

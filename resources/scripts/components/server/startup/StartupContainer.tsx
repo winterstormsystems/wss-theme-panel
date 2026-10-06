@@ -15,6 +15,7 @@ import { usePermissions } from '@/plugins/usePermissions';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { emptyCompactClass } from '@/components/ui/styles';
 import { cn } from '@/lib/cn';
+import { copy } from '@/wss/copy';
 
 const StartupContainer = () => {
     const server = useCurrentServer()!;
@@ -66,12 +67,15 @@ const StartupContainer = () => {
                 }}
             />
             <div className={'md:flex'}>
-                <TitledGreyBox title={'Startup Command'} className={'flex-1'}>
+                <TitledGreyBox title={copy.runtime.launchCommand} className={'flex-1'}>
                     <div className={'px-1 py-2'}>
                         <p className={'rounded-sm bg-terminal px-4 py-2 font-mono'}>{data.meta?.startup_command}</p>
                     </div>
                 </TitledGreyBox>
-                <TitledGreyBox title={'Docker Image'} className={'flex-1 lg:flex-none lg:w-1/3 mt-8 md:mt-0 md:ml-10'}>
+                <TitledGreyBox
+                    title={copy.runtime.runtimeImage}
+                    className={'flex-1 lg:flex-none lg:w-1/3 mt-8 md:mt-0 md:ml-10'}
+                >
                     {Object.keys(dockerImages).length > 1 && !isCustomImage ? (
                         <>
                             <InputSpinner visible={updateDockerImage.isPending}>
@@ -85,35 +89,32 @@ const StartupContainer = () => {
                                     }))}
                                 />
                             </InputSpinner>
-                            <p className={'text-xs text-muted-foreground mt-2'}>
-                                This is an advanced feature allowing you to select a Docker image to use when running
-                                this server instance.
-                            </p>
+                            <p className={'text-xs text-muted-foreground mt-2'}>{copy.runtime.imageHelp}</p>
                         </>
                     ) : (
                         <>
-                            <TextInput disabled readOnly value={server.attributes.docker_image} />
+                            <TextInput
+                                disabled
+                                readOnly
+                                value={server.attributes.docker_image}
+                                aria-label={copy.runtime.runtimeImage}
+                            />
                             {isCustomImage && (
-                                <p className={'text-xs text-muted-foreground mt-2'}>
-                                    This {"server's"} Docker image has been manually set by an administrator and cannot
-                                    be changed through this UI.
-                                </p>
+                                <p className={'text-xs text-muted-foreground mt-2'}>{copy.runtime.imageLocked}</p>
                             )}
                         </>
                     )}
                 </TitledGreyBox>
             </div>
-            <h3 className={'mt-8 mb-2 text-2xl'}>Variables</h3>
+            <h3 className={'mt-8 mb-3 text-base font-semibold text-foreground'}>{copy.runtime.variablesTitle}</h3>
             {data.data.length === 0 ? (
                 <Empty className={cn(emptyCompactClass, 'border')}>
                     <EmptyHeader>
                         <EmptyMedia variant={'icon'}>
                             <Variable />
                         </EmptyMedia>
-                        <EmptyTitle>No variables</EmptyTitle>
-                        <EmptyDescription>
-                            This server doesn&apos;t have any startup variables to configure.
-                        </EmptyDescription>
+                        <EmptyTitle>{copy.runtime.noVariablesTitle}</EmptyTitle>
+                        <EmptyDescription>{copy.runtime.noVariables}</EmptyDescription>
                     </EmptyHeader>
                 </Empty>
             ) : (

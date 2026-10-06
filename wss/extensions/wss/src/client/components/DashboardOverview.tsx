@@ -23,11 +23,18 @@ function useBotTotal() {
 
 function Stat({ label, value, tone }: { label: string; value: string | number; tone: StatusTone }) {
     return (
-        <div className={'wss:flex wss:items-center wss:gap-3 wss:rounded-lg wss:border wss:border-border wss:bg-card wss:px-4 wss:py-3'}>
-            <span aria-hidden={'true'} className={`wss:h-8 wss:w-1 wss:shrink-0 wss:rounded-full ${toneBackground[tone]}`} />
+        <div
+            className={
+                'wss:flex wss:items-center wss:gap-3 wss:rounded-lg wss:border wss:border-border wss:bg-card wss:px-4 wss:py-3'
+            }
+        >
+            <span
+                aria-hidden={'true'}
+                className={`wss:h-8 wss:w-1 wss:shrink-0 wss:rounded-full ${toneBackground[tone]}`}
+            />
             <div className={'wss:min-w-0'}>
-                <dt className={'wss:truncate wss:text-xs wss:font-medium wss:text-muted-foreground'}>{label}</dt>
-                <dd className={'wss:text-xl wss:font-semibold wss:tabular-nums wss:text-foreground'}>{value}</dd>
+                <p className={'wss:truncate wss:text-xs wss:font-medium wss:text-muted-foreground'}>{label}</p>
+                <p className={'wss:text-xl wss:font-semibold wss:tabular-nums wss:text-foreground'}>{value}</p>
             </div>
         </div>
     );
@@ -50,13 +57,26 @@ export default function DashboardOverview() {
 
     return (
         <section aria-label={`${terms.bot} summary`} className={'wss:mb-5'}>
-            <dl className={'wss:grid wss:grid-cols-3 wss:gap-2 wss:sm:gap-3 wss:lg:max-w-2xl'} aria-busy={total.isPending}>
-                <Stat label={terms.bots} tone={'neutral'} value={total.isPending ? '…' : total.isError ? '—' : total.data} />
+            <div
+                role={'group'}
+                aria-label={'Bot summary'}
+                className={'wss:grid wss:grid-cols-3 wss:gap-2 wss:sm:gap-3 wss:lg:max-w-2xl'}
+                aria-busy={total.isPending}
+            >
+                <Stat
+                    label={terms.bots}
+                    tone={'neutral'}
+                    value={total.isPending ? '…' : total.isError ? '—' : total.data}
+                />
                 <Stat label={'Online'} tone={'success'} value={online} />
                 <Stat label={'Offline'} tone={'danger'} value={offline} />
-            </dl>
+            </div>
             {(total.isError || changing > 0 || partial) && (
-                <p className={'wss:mt-2 wss:flex wss:flex-wrap wss:items-center wss:gap-2 wss:text-xs wss:text-muted-foreground'}>
+                <p
+                    className={
+                        'wss:mt-2 wss:flex wss:flex-wrap wss:items-center wss:gap-2 wss:text-xs wss:text-muted-foreground'
+                    }
+                >
                     {total.isError && (
                         <>
                             The {lower('bot')} total is temporarily unavailable.

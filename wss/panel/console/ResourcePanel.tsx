@@ -109,7 +109,12 @@ export default function ResourcePanel({ server, className }: { server: Server; c
 
     const memoryLimit = limits.memory ? mbToBytes(limits.memory) : 0;
     const diskLimit = limits.disk ? mbToBytes(limits.disk) : 0;
-    const offline = <span className={'text-muted-foreground'}>Offline</span>;
+    const offline = (
+        <span className={'text-muted-foreground'}>
+            <span aria-hidden>—</span>
+            <span className={'sr-only'}>Not available while offline</span>
+        </span>
+    );
 
     return (
         <section aria-label={'Resources'} className={cn('rounded-lg border border-border bg-card p-4', className)}>
