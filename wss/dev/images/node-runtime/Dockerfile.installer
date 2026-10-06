@@ -1,0 +1,4 @@
+FROM wss-dev/yolk-node:22
+USER root
+WORKDIR /mnt/server
+CMD ["/bin/ash"]

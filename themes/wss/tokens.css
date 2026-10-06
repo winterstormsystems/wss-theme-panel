@@ -1,0 +1,37 @@
+/*
+ * Winter Storm Systems panel theme.
+ *
+ * Published verbatim to public/assets/theme.css by `php artisan p:theme:apply wss` and loaded
+ * after the panel's own stylesheet, so it needs no frontend rebuild. Files in ./assets are
+ * published to /assets/theme/ (logos, fonts).
+ *
+ * SCAFFOLD ONLY: nothing is overridden yet, so the panel keeps its stock look. The redesign
+ * fills in the blocks below. Override tokens only; do not target core class names, which are
+ * not a stable API and will break on panel updates.
+ *
+ * The panel currently forces dark mode (the `.dark` class on <html>), so colour roles must be
+ * set under `.dark`; `:root` alone loses to core's `.dark` block. Token names and defaults:
+ * resources/scripts/assets/tailwind.css (core) and packages/sdk/README.md ("Themes").
+ */
+
+/* Layout, density and browser chrome. */
+:root {
+    /* --layout-content-width: 75rem; */
+    /* --layout-sidebar-width: 16rem; */
+    /* --layout-auth-width: 43.75rem; */
+    /* --radius: 0.5rem; */
+    /* --spacing: 0.25rem; */
+    /* --theme-color: #0e4688; */
+}
+
+/* Colour roles (dark scheme, the one the panel ships). */
+.dark {
+    /* --background, --foreground, --card, --card-foreground, --popover, --popover-foreground */
+    /* --primary, --primary-foreground, --secondary, --secondary-foreground */
+    /* --muted, --muted-foreground, --accent, --accent-foreground */
+    /* --destructive, --border, --input, --ring, --success, --warning, --caution */
+    /* --sidebar, --sidebar-foreground, --sidebar-primary, --sidebar-accent, --sidebar-border */
+    /* --chart-1 … --chart-5 (resource graphs) */
+    /* --terminal-background, --terminal-foreground, --terminal-* (console) */
+    /* --editor-* (file editor), --scrollbar-*, --selection */
+}

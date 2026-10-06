@@ -1,0 +1,22 @@
+{
+    "$schema": "./node_modules/@pterodactyl/sdk/manifest.schema.json",
+    "id": "wss",
+    "name": "Winter Storm Systems",
+    "version": "1.0.0",
+    "requires": {
+        "panel": "^2.0.0-dev",
+        "sdk": "^2.0.0-beta.4",
+        "php": "^8.3"
+    },
+    "description": "WSS Bot Hosting customisations for Pterodactyl v2: branding, bot-oriented dashboard and screens, and WHMS-lite integration points.",
+    "author": "Winter Storm Systems",
+    "provider": "Wss\\WssProvider",
+    "autoload": {
+        "Wss\\": "src"
+    },
+    "ui": {
+        "entry": "dist/client.js",
+        "mode": "native",
+        "prefix": "wss"
+    }
+}

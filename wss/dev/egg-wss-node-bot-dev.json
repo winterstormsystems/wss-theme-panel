@@ -1,0 +1,47 @@
+{
+    "_comment": "DEV-ONLY test egg for exercising Panel v2 + Wings end to end in the sandbox. Uses a locally built stand-in image; not for production.",
+    "meta": { "version": "PTDL_v2", "update_url": null },
+    "exported_at": "2026-10-06T00:00:00+00:00",
+    "name": "WSS Node.js Bot (dev test)",
+    "author": "dev@wss.test",
+    "description": "Minimal Node.js bot used to verify install, start, console, stats and files against Wings.",
+    "features": null,
+    "docker_images": { "Node.js 22 (local stand-in)": "wss-dev/yolk-node:22" },
+    "file_denylist": [],
+    "startup": "node {{BOT_FILE}}",
+    "config": {
+        "files": "{}",
+        "startup": "{\"done\": \"[bot] online\"}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/ash\nmkdir -p /mnt/server\ncat > /mnt/server/index.js <<'JS'\nconst name = process.env.BOT_NAME || 'wss-bot';\nconsole.log(`[bot] ${name} starting on node ${process.version}`);\nconsole.log('[bot] online');\nlet ticks = 0;\nsetInterval(() => console.log(`[bot] heartbeat ${++ticks}`), 5000);\nprocess.stdin.on('data', (d) => console.log(`[bot] received command: ${d.toString().trim()}`));\nprocess.on('SIGINT', () => { console.log('[bot] shutting down'); process.exit(0); });\nJS\necho 'install complete'\n",
+            "container": "wss-dev/installer-node:22",
+            "entrypoint": "ash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Bot file",
+            "description": "Entry file to run.",
+            "env_variable": "BOT_FILE",
+            "default_value": "index.js",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:64",
+            "field_type": "text"
+        },
+        {
+            "name": "Bot name",
+            "description": "Display name printed on start.",
+            "env_variable": "BOT_NAME",
+            "default_value": "wss-dev-bot",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:32",
+            "field_type": "text"
+        }
+    ]
+}
