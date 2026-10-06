@@ -65,7 +65,13 @@ export default function BotHeader({ server, onConsole }: { server: Server; onCon
             <div className={'flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center'}>
                 {onConsole && <Slot name={'server.console.power.before'} data={server} />}
                 <Can action={['control.start', 'control.stop', 'control.restart']} matchAny>
-                    <PowerButtons className={'flex w-full gap-2 sm:w-auto [&_button]:min-w-24'} />
+                    {/* Start is core's primary button; scoping --primary to the success colour here makes
+                        it green (Restart stays neutral, Stop/Kill red) without changing PowerButtons. */}
+                    <PowerButtons
+                        className={
+                            'flex w-full gap-2 sm:w-auto [&_button]:min-w-24 [--primary:var(--success)] [--primary-foreground:var(--success-foreground)]'
+                        }
+                    />
                 </Can>
                 {onConsole && <Slot name={'server.console.power.after'} data={server} />}
             </div>
