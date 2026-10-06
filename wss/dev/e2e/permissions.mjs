@@ -56,6 +56,18 @@ const powerButtons = await sub.page.getByRole('button', { name: /^(Start|Stop|Re
 await sub.page.screenshot({ path: `${process.env.OUT ?? '.'}/permissions-subuser.png` });
 const settings = await sub.page.goto(`${base}/server/${bot}/settings`).then(() => sub.page.waitForTimeout(1500)).then(() => sub.page.locator('#wss-main').innerText());
 
+// Direct URLs to sections the subuser may not use: core's route guard must still deny them,
+// and no management control may render.
+const controls = /^(New allocation|New backup|New database|New schedule|Invite member|Make Primary|Save|Reinstall Bot|Start|Restart|Stop|Kill)$/;
+for (const section of ['network', 'backups', 'schedules', 'databases', 'users', 'startup', 'activity']) {
+    await sub.page.goto(`${base}/server/${bot}/${section}`);
+    await sub.page.waitForTimeout(1500);
+    const main = await sub.page.locator('#wss-main').innerText();
+    const visible = (await sub.page.locator('#wss-main').getByRole('button').allInnerTexts()).filter((t) => controls.test(t.trim()));
+    results.push(`direct /${section}: ${/Access denied|permission/i.test(main) ? 'denied' : 'RENDERED'}; management controls: ${visible.length ? visible.join(', ') : 'none'}`);
+}
+await sub.page.screenshot({ path: `${process.env.OUT ?? '.'}/permissions-subuser-denied.png` });
+
 results.push(`subuser bot sections: ${links.join(', ')}`);
 results.push(`subuser power buttons visible: ${powerButtons}`);
 results.push(`settings page shows rename/reinstall: ${/Bot Details|Reinstall Bot/.test(settings)}`);

@@ -1,6 +1,9 @@
-// Captures the customer UI screenshot set at several widths and reports overflow and errors.
+// Captures the customer UI screenshot set and sweeps every customer page at several widths for
+// horizontal overflow and console/network errors.
 // Usage: node screens.mjs <bot identifier>   (env: PW_PATH, OUT, PANEL_USER, PANEL_PASSWORD;
 //        optional EMPTY_USER / EMPTY_PASSWORD for an account without bots)
+// Bot pages are reached by in-app navigation, so each session uses one WebSocket token (core
+// allows five per minute); sessions are paced accordingly.
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PW_PATH);
@@ -12,6 +15,26 @@ const problems = [];
 const overflow = [];
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const browser = await chromium.launch();
+
+const botSections = [
+    ['Overview', 'overview'],
+    ['Console', 'console'],
+    ['Files', 'files'],
+    ['Runtime', 'runtime'],
+    ['Network', 'network'],
+    ['Backups', 'backups'],
+    ['Schedules', 'schedules'],
+    ['Databases', 'databases'],
+    ['Team Access', 'team-access'],
+    ['Settings', 'settings'],
+    ['Activity', 'activity'],
+];
+const accountPages = [
+    ['/account', 'account'],
+    ['/account/api', 'account-api'],
+    ['/account/ssh', 'account-ssh'],
+    ['/account/activity', 'account-activity'],
+];
 
 async function session(width, height, user = process.env.PANEL_USER ?? 'admin', password = process.env.PANEL_PASSWORD) {
     const ctx = await browser.newContext({ viewport: { width, height } });
@@ -30,15 +53,30 @@ async function session(width, height, user = process.env.PANEL_USER ?? 'admin', 
     return { ctx, page, tag };
 }
 
-async function shot(page, tag, name, path, { fullPage = false, wait = 1500 } = {}) {
-    if (path) {
-        await page.goto(`${base}${path}`);
-        await page.waitForLoadState('networkidle');
-    }
-    await page.waitForTimeout(wait);
-    await page.screenshot({ path: `${out}/${name}.png`, fullPage });
+async function checkOverflow(page, tag, name) {
     const x = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     if (x > 0) overflow.push(`${tag} ${name}: ${x}px`);
+}
+
+async function shot(page, tag, name, { fullPage = false, wait = 1500 } = {}) {
+    await page.waitForTimeout(wait);
+    await checkOverflow(page, tag, name);
+    if (name) await page.screenshot({ path: `${out}/${name}.png`, fullPage });
+}
+
+async function goto(page, path) {
+    await page.goto(`${base}${path}`);
+    await page.waitForLoadState('networkidle');
+}
+
+/** Opens a bot section from the sidebar (desktop) or the section tabs (below lg). */
+async function openSection(page, label) {
+    const sidebar = page.locator('#wss-sidebar');
+    const nav = (await sidebar.isVisible()) && (await page.viewportSize()).width >= 1024
+        ? sidebar
+        : page.getByRole('navigation', { name: 'Bot sections' });
+    await nav.getByRole('link', { name: label, exact: true }).click();
+    await page.waitForLoadState('networkidle');
 }
 
 // Logged-out login pages
@@ -47,64 +85,76 @@ for (const [name, width, height] of [
     ['02-login-mobile', 390, 844],
 ]) {
     const page = await (await browser.newContext({ viewport: { width, height } })).newPage();
-    await page.goto(`${base}/auth/login`);
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: `${out}/${name}.png` });
+    await goto(page, '/auth/login');
+    await shot(page, `${width}px`, name, { wait: 500 });
     await page.close();
 }
 
-// Desktop
+// Desktop: every page
 {
     const { ctx, page, tag } = await session(1440, 900);
-    await shot(page, tag, '03-dashboard-desktop', null);
+    await shot(page, tag, '03-my-bots-desktop');
     if (bot) {
-        // One page load, then in-app navigation through the sidebar (one websocket token).
-        await shot(page, tag, '05-bot-overview-desktop', `/server/${bot}/overview`);
-        const nav = page.locator('#wss-sidebar');
-        await nav.getByRole('link', { name: 'Console', exact: true }).click();
-        await shot(page, tag, '06-bot-console-desktop', null, { wait: 3000 });
-        await nav.getByRole('link', { name: 'Files', exact: true }).click();
-        await shot(page, tag, '08-files-desktop', null);
-        await nav.getByRole('link', { name: 'Runtime', exact: true }).click();
-        await shot(page, tag, '09-runtime-desktop', null);
-        await nav.getByRole('link', { name: 'Settings', exact: true }).click();
-        await shot(page, tag, '10-settings-desktop', null, { fullPage: true });
-        await nav.getByRole('link', { name: 'Account', exact: true }).click();
-        await shot(page, tag, 'x-account-desktop', null);
-    } else {
-        await shot(page, tag, 'x-account-desktop', '/account');
+        await goto(page, `/server/${bot}/overview`);
+        let index = 4;
+        for (const [label, slug] of botSections) {
+            if (label !== 'Overview') await openSection(page, label);
+            const name = `${String(index++).padStart(2, '0')}-${slug}-desktop`;
+            await shot(page, tag, name, { fullPage: true, wait: label === 'Console' ? 3000 : 1500 });
+        }
+    }
+    for (const [path, slug] of accountPages) {
+        await goto(page, path);
+        await shot(page, tag, `x-${slug}-desktop`, { fullPage: true });
     }
     await ctx.close();
 }
-await sleep(bot ? 30000 : 0); // core allows 5 websocket tokens per minute
 
-// Laptop and tablet
-for (const [width, height] of [
-    [1280, 800],
-    [820, 1180],
-]) {
-    const { ctx, page, tag } = await session(width, height);
-    await shot(page, tag, `x-dashboard-${width}`, null);
-    if (bot) await shot(page, tag, `x-bot-console-${width}`, `/server/${bot}`, { wait: 2500 });
-    await ctx.close();
-    if (bot) await sleep(20000);
-}
-
-// Mobile
+// Mobile set
+if (bot) await sleep(15000);
 {
     const { ctx, page, tag } = await session(390, 844);
-    await shot(page, tag, '04-dashboard-mobile', null, { fullPage: true });
-    await page.getByRole('button', { name: 'Open navigation' }).click();
-    await shot(page, tag, '11-mobile-navigation', null, { wait: 600 });
-    await page.keyboard.press('Escape');
+    await shot(page, tag, '20-my-bots-mobile', { fullPage: true });
     if (bot) {
-        await shot(page, tag, '07-bot-console-mobile', `/server/${bot}`, { wait: 3000, fullPage: true });
+        await goto(page, `/server/${bot}`);
         await page.getByRole('button', { name: 'Open navigation' }).click();
-        await shot(page, tag, 'x-mobile-navigation-bot', null, { wait: 600 });
+        await shot(page, tag, '21-bot-navigation-mobile', { wait: 600 });
         await page.keyboard.press('Escape');
-        await page.getByRole('navigation', { name: 'Bot sections' }).getByRole('link', { name: 'Files', exact: true }).click();
-        await shot(page, tag, 'x-files-mobile', null, { fullPage: true });
+        await shot(page, tag, '22-console-mobile', { fullPage: true, wait: 2500 });
+        await openSection(page, 'Backups');
+        await shot(page, tag, '23-backups-mobile', { fullPage: true });
+        await openSection(page, 'Team Access');
+        await shot(page, tag, 'x-team-access-mobile', { fullPage: true });
+        await openSection(page, 'Network');
+        await shot(page, tag, 'x-network-mobile', { fullPage: true });
+    }
+    await goto(page, '/account');
+    await shot(page, tag, '24-account-mobile', { fullPage: true });
+    await ctx.close();
+}
+
+// Overflow sweep at the remaining widths (no screenshots)
+for (const [width, height] of [
+    [1280, 800],
+    [1024, 768],
+    [820, 1180],
+    [768, 1024],
+    [430, 932],
+]) {
+    if (bot) await sleep(15000);
+    const { ctx, page, tag } = await session(width, height);
+    await shot(page, tag, null, { wait: 800 });
+    if (bot) {
+        await goto(page, `/server/${bot}/overview`);
+        for (const [label] of botSections) {
+            if (label !== 'Overview') await openSection(page, label);
+            await page.waitForTimeout(900);
+            await checkOverflow(page, tag, label);
+        }
+    }
+    for (const [path, slug] of accountPages) {
+        await goto(page, path);
+        await checkOverflow(page, tag, slug);
     }
     await ctx.close();
 }
@@ -112,7 +162,7 @@ for (const [width, height] of [
 // Empty account
 if (process.env.EMPTY_USER) {
     const { ctx, page, tag } = await session(1440, 900, process.env.EMPTY_USER, process.env.EMPTY_PASSWORD);
-    await shot(page, tag, '12-empty-account', null);
+    await shot(page, tag, '25-empty-account');
     await ctx.close();
 }
 

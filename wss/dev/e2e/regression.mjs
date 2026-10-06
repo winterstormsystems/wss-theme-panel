@@ -122,13 +122,45 @@ await step('file manager lists files', async () => {
 });
 await page.screenshot({ path: `${out}/regression-files.png` });
 
+// Every other bot section, through the sidebar (same page, same WebSocket connection). Each
+// page must render its WSS heading and the real content or its intentional empty state.
+async function section(link, heading, content) {
+    await step(`${link} page`, async () => {
+        await page.locator('#wss-sidebar').getByRole('link', { name: link, exact: true }).click();
+        await page.getByRole('heading', { name: heading, exact: true }).waitFor({ timeout: 15000 });
+        await page.locator('#wss-main').getByText(content).first().waitFor({ timeout: 15000 });
+        if (await page.locator('#wss-main [role="alert"]').count()) throw new Error('error state shown');
+    });
+}
+await section('Overview', 'Resources', /Address/);
+await section('Runtime', 'Runtime Configuration', 'Launch Command');
+await section('Network', 'Network', /allocations? (available|for this bot)|No allocations/);
+await section('Backups', 'Backups', /backups? (have been|can)|No backups|Before update/);
+await section('Schedules', 'Schedules', /No schedules|Nightly restart/);
+await section('Databases', 'Databases', /databases? (have been|can)|No databases|botdata/);
+await section('Team Access', 'Team Access', /Invite member|No team members|@/);
+await section('Settings', 'Settings', 'Bot Details');
+await section('Activity', 'Activity', /the bot|All events/);
+
 await step('account navigation', async () => {
     await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Account' }).click();
     await page.waitForURL(/\/account$/);
+    await page.getByText('Two-step verification', { exact: true }).waitFor({ timeout: 15000 });
 });
 
+for (const [link, heading] of [
+    ['API credentials', 'API credentials'],
+    ['SSH keys', 'SSH keys'],
+    ['Activity', 'Account activity'],
+]) {
+    await step(`account ${link}`, async () => {
+        await page.locator('#wss-sidebar').getByRole('link', { name: link, exact: true }).click();
+        await page.getByRole('heading', { name: heading, exact: true }).waitFor({ timeout: 15000 });
+    });
+}
+
 await step('dashboard navigation', async () => {
-    await page.getByRole('link', { name: 'My Bots' }).click();
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'My Bots' }).click();
     await page.getByRole('link', { name: botName }).waitFor({ timeout: 15000 });
 });
 
