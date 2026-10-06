@@ -4,7 +4,7 @@ import Icon from '@/components/elements/Icon';
 import { cn } from '@/lib/cn';
 import { cardTitleClass } from '@/components/ui/typography';
 import { isString } from '@/lib/objects';
-import { useInWssShell } from '@/wss';
+import { useWssWording } from '@/wss';
 
 interface Props {
     icon?: LucideIcon;
@@ -15,8 +15,10 @@ interface Props {
 }
 
 const TitledGreyBox = ({ icon, title, children, className, contentClassName }: Props) => {
-    // WSS core patch: inside the WSS shell, render as a WSS panel (bordered card, sentence-case title).
-    const wss = useInWssShell();
+    // WSS core patch: inside the WSS shell, render as a WSS panel (bordered card, sentence-case title)
+    // and pass core-authored title and body text through the presentation wording.
+    const wording = useWssWording();
+    const wss = wording !== undefined;
 
     return (
         <div
@@ -26,13 +28,15 @@ const TitledGreyBox = ({ icon, title, children, className, contentClassName }: P
                 {isString(title) ? (
                     <h2 className={wss ? 'font-header text-sm font-semibold text-foreground' : cardTitleClass}>
                         {icon && <Icon icon={icon} className={'mr-2 text-muted-foreground'} />}
-                        {title}
+                        {wording ? wording.text(title) : title}
                     </h2>
                 ) : (
                     title
                 )}
             </div>
-            <div className={cn(wss ? 'p-5 pt-3' : 'p-3', contentClassName)}>{children}</div>
+            <div className={cn(wss ? 'p-5 pt-3' : 'p-3', contentClassName)}>
+                {wording ? wording.node(children) : children}
+            </div>
         </div>
     );
 };

@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 import Form from '@/components/form/Form';
 import { copy } from '../terminology';
+import { authPhrases, rewordNode } from '../wording';
+
+const authText = (text: string): string => authPhrases.get(text.trim()) ?? text;
 
 interface Props {
     form: { handleSubmit: () => unknown };
@@ -11,7 +14,9 @@ interface Props {
 
 /**
  * Card around the auth forms (replaces core's LoginFormContainer via a one-line seam, same
- * props). Same Form wrapper and fields; the Pterodactyl mascot and footer are gone.
+ * props). Same Form wrapper and fields; the Pterodactyl mascot and footer are gone. Core's
+ * button and link texts on all four auth screens ("Login", "Return to Login", …) are mapped to
+ * WSS wording by exact match (authPhrases); render-prop fields are not touched.
  */
 export default function AuthCard({ form, title, className, children }: Props) {
     const mapped = title ? copy.auth.titles.get(title) : undefined;
@@ -28,7 +33,7 @@ export default function AuthCard({ form, title, className, children }: Props) {
             )}
             <Form form={form} className={className}>
                 <div className={'w-full rounded-lg border border-border bg-card p-6 text-card-foreground sm:p-8'}>
-                    <div className={'w-full'}>{children}</div>
+                    <div className={'w-full'}>{rewordNode(children, authText)}</div>
                 </div>
             </Form>
         </div>

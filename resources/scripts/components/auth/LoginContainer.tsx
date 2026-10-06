@@ -10,7 +10,6 @@ import { useLogin } from '@/api/auth/queries';
 import { toast } from 'sonner';
 import Slot from '@/extensions/Slot';
 import { useRouteSlotData } from '@/router/routeSlots';
-import { copy } from '@/wss/copy';
 
 const LoginContainer = () => {
     const navigate = useNavigate();
@@ -81,7 +80,7 @@ const LoginContainer = () => {
             </div>
             <div className={'mt-6'}>
                 <form.AppForm>
-                    <form.SubmitButton size={'xlarge'}>{copy.auth.signIn}</form.SubmitButton>
+                    <form.SubmitButton size={'xlarge'}>Login</form.SubmitButton>
                 </form.AppForm>
             </div>
             <Slot name={'auth.login.form.after'} data={slotData} />

@@ -1,5 +1,6 @@
 import { Children, cloneElement, isValidElement, type ReactNode } from 'react';
 import { isString } from '@/lib/objects';
+import { copy } from './terminology';
 
 /**
  * Presentation-layer wording for text that core authors and passes through primitives the WSS
@@ -31,6 +32,31 @@ const rules: [RegExp, Replacer][] = [
     [/\bsub-?user(s)?\b/gi, (match, plural = '') => matchCase(match, `team member${plural}`)],
 ];
 
+// Whole strings core uses as labels and titles that need more than the patterns above.
+const phrases = new Map<string, string>([
+    ['Change Server Details', copy.settings.detailsTitle],
+    ['Server Name', copy.settings.name],
+    ['Server Description', copy.settings.description],
+    ['Reinstall Server', copy.settings.reinstallTitle],
+    ['Startup Command', copy.runtime.launchCommand],
+    ['Docker Image', copy.runtime.runtimeImage],
+]);
+
+/** Auth screens (WSS AuthCard): core's button and link texts. */
+export const authPhrases = new Map<string, string>([
+    ['Login', copy.auth.signIn],
+    ['Return to Login', copy.auth.returnToSignIn],
+    ['Send Email', copy.auth.sendResetLink],
+    ['Reset Password', copy.auth.resetPassword],
+]);
+
+/** Console performance cards (WSS ChartBlock): core's chart titles. */
+export const chartPhrases = new Map<string, string>([
+    ['CPU Load', copy.graphs.cpu],
+    ['Memory', copy.graphs.memory],
+    ['Network', copy.graphs.network],
+]);
+
 // Exact titles core uses that need more than the patterns above.
 const titles = new Map<string, string>([
     ['Server Suspended', 'Bot Suspended'],
@@ -43,6 +69,8 @@ const applyRules = (text: string): string =>
 
 /** Rewords core text; quoted parts ("My server backup") are user data and stay as they are. */
 export function reword(text: string): string {
+    const phrase = phrases.get(text.trim());
+    if (phrase) return phrase;
     return text
         .split(/("[^"]*"|“[^”]*”)/)
         .map((part, index) => (index % 2 === 1 ? part : applyRules(part)))

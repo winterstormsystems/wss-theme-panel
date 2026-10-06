@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { describe, expect, it } from 'vitest';
-import { reword, rewordNode, rewordTitle } from './wording';
+import { authPhrases, chartPhrases, reword, rewordNode, rewordTitle } from './wording';
 
 describe('reword', () => {
     it('replaces "server" after a determiner, keeping case, plural and possessive', () => {
@@ -43,5 +43,28 @@ describe('rewordNode', () => {
         const render = () => 'this server';
         const tree = createElement('div', null, render as never);
         expect(rewordNode(tree)).toBe(tree);
+    });
+});
+
+describe('phrase maps', () => {
+    it('maps whole core labels used by forms and boxes', () => {
+        expect(reword('Change Server Details')).toBe('Bot Details');
+        expect(reword('Server Name')).toBe('Bot Name');
+        expect(reword('  Startup Command ')).toBe('Launch Command');
+        expect(reword('Docker Image')).toBe('Runtime Image');
+    });
+
+    it('rewords help text that mentions the server directory', () => {
+        expect(reword('the .pteroignore file in the root of the server directory')).toBe(
+            'the .pteroignore file in the root of the bot directory'
+        );
+    });
+
+    it('has auth and chart phrases for their own components only', () => {
+        expect(authPhrases.get('Return to Login')).toBe('Return to sign in');
+        expect(authPhrases.get('Login')).toBe('Sign in');
+        expect(chartPhrases.get('CPU Load')).toBe('CPU Usage');
+        expect(reword('Login')).toBe('Login');
+        expect(reword('Memory')).toBe('Memory');
     });
 });

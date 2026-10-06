@@ -7,6 +7,7 @@ import { capitalize } from '@/lib/strings';
 import Select, { type SelectOption } from '@/components/ui/Select';
 import Switch, { type SwitchProps } from '@/components/ui/Switch';
 import Checkbox from '@/components/ui/Checkbox';
+import { useWssWording } from '@/wss';
 
 type BaseProps = {
     label?: string;
@@ -14,14 +15,21 @@ type BaseProps = {
     light?: boolean;
 };
 
+// WSS core patch: inside the WSS shell, field labels, help and validation text pass through the
+// presentation wording (wss/panel/wording.ts); elsewhere they render unchanged.
+const FieldText = ({ children }: { children: string }) => {
+    const wording = useWssWording();
+    return <>{wording ? wording.text(children) : children}</>;
+};
+
 const HelpText = ({ id, error, description }: { id: string; error?: string; description?: string }) =>
     error ? (
         <p id={id} className={'input-help error'}>
-            {capitalize(error)}
+            <FieldText>{capitalize(error)}</FieldText>
         </p>
     ) : description ? (
         <p id={id} className={'input-help'}>
-            {description}
+            <FieldText>{description}</FieldText>
         </p>
     ) : null;
 
@@ -62,7 +70,7 @@ export function TextField({
         <div>
             {label && (
                 <Label htmlFor={fieldId} isLight={light}>
-                    {label}
+                    <FieldText>{label}</FieldText>
                 </Label>
             )}
             <TextInput
@@ -103,7 +111,7 @@ export function TextAreaField({
         <div>
             {label && (
                 <Label htmlFor={fieldId} isLight={light}>
-                    {label}
+                    <FieldText>{label}</FieldText>
                 </Label>
             )}
             <TextArea
@@ -142,7 +150,7 @@ export function NumberField({ id, label, description, light, min, max, format, .
         <div>
             {label && (
                 <Label htmlFor={fieldId} isLight={light}>
-                    {label}
+                    <FieldText>{label}</FieldText>
                 </Label>
             )}
             <NumberInput
@@ -194,7 +202,7 @@ export function SelectField({
         <div>
             {label && (
                 <Label htmlFor={fieldId} isLight={light}>
-                    {label}
+                    <FieldText>{label}</FieldText>
                 </Label>
             )}
             <Select
@@ -244,7 +252,7 @@ export function MultiSelectField({
         <div>
             {label && (
                 <Label htmlFor={fieldId} isLight={light}>
-                    {label}
+                    <FieldText>{label}</FieldText>
                 </Label>
             )}
             <Select

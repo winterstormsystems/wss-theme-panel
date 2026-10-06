@@ -3,7 +3,6 @@ import TitledGreyBox from '@/components/elements/TitledGreyBox';
 import { useAppForm, Form } from '@/components/form';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import { useCurrentServer, useRenameServer } from '@/api/server/queries';
-import { copy } from '@/wss/copy';
 
 const RenameServerBox = () => {
     const server = useCurrentServer()!;
@@ -32,18 +31,18 @@ const RenameServerBox = () => {
     const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
 
     return (
-        <TitledGreyBox title={copy.settings.detailsTitle} className={'relative'}>
+        <TitledGreyBox title={'Change Server Details'} className={'relative'}>
             <SpinnerOverlay visible={isSubmitting} />
             <Form form={form} className={'mb-0'}>
                 <form.AppField
                     name={'name'}
                     validators={{ onChange: ({ value }) => (value.length >= 1 ? undefined : 'Required') }}
                 >
-                    {(field) => <field.TextField id={'name'} label={copy.settings.name} type={'text'} />}
+                    {(field) => <field.TextField id={'name'} label={'Server Name'} type={'text'} />}
                 </form.AppField>
                 <div className={'mt-6'}>
                     <form.AppField name={'description'}>
-                        {(field) => <field.TextAreaField label={copy.settings.description} rows={3} />}
+                        {(field) => <field.TextAreaField label={'Server Description'} rows={3} />}
                     </form.AppField>
                 </div>
                 <div className={'mt-6 text-right'}>

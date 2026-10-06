@@ -120,6 +120,15 @@ export const copy = {
         sendInvite: 'Send invite',
         restrictedNote: 'You can only grant permissions that your own account has on this bot.',
     },
+    connection: {
+        // Titles only: the descriptions core attaches (HTTP errors, Wings messages) stay as they are.
+        refreshFailed: 'Unable to refresh the connection to this bot',
+        lost: 'Lost connection to this bot',
+        hostError: 'The bot host reported an error',
+        rejected: 'Connection to this bot was rejected',
+        startFailed: 'Unable to connect to this bot',
+        reconnecting: 'Reconnecting to your bot…',
+    },
     graphs: {
         cpu: 'CPU Usage',
         memory: 'Memory Usage',
@@ -127,9 +136,21 @@ export const copy = {
     },
     auth: {
         signIn: 'Sign in',
+        returnToSignIn: 'Return to sign in',
+        sendResetLink: 'Send reset link',
+        resetPassword: 'Reset password',
         // Maps the titles core passes to the auth card onto WSS wording; unknown titles pass through.
         titles: new Map<string, { title: string; subtitle?: string }>([
             ['Login to Continue', { title: 'Welcome back', subtitle: 'Sign in to manage your bots.' }],
+            [
+                'Request Password Reset',
+                { title: 'Reset your password', subtitle: "We'll email you a link to choose a new password." },
+            ],
+            ['Reset Password', { title: 'Choose a new password' }],
+            [
+                'Device Checkpoint',
+                { title: 'Two-step verification', subtitle: "Confirm it's you to finish signing in." },
+            ],
         ]),
     },
 } as const;
