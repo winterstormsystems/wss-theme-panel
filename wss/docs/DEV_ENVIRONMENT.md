@@ -95,5 +95,8 @@ stop reaches it. Don't use these images in production.
 
 Files survive; processes don't. Start `dockerd`, `docker start wss-mariadb`, `redis-server`,
 `wss/dev/serve.sh`, the queue worker and Wings again (the `pterodactyl_nw` network persists).
+Start long-running daemons with `setsid nohup … &` so they are not tied to the shell that
+started them (a backgrounded helper script's daemons died with it once). Start MariaDB before
+Wings: Wings exits if the panel cannot answer its first `/api/remote/servers` call.
 The dashboard reads resource state through the panel's cache, so a just-started bot can show
 its previous state for up to ~20 seconds.

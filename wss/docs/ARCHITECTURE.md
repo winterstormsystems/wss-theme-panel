@@ -1,84 +1,101 @@
-# WSS extension architecture
+# WSS architecture (Panel v2)
 
 ```
-themes/wss/                    theme: tokens.css (all colours, type, layout) + assets/fonts
+themes/wss/                    theme: tokens.css (colours, type, layout) + assets/fonts, assets/brand
+resources/scripts/wss/         bridge: the only WSS paths upstream seams import (see CORE_PATCHES.md)
+wss/panel/                     WSS application UI, compiled into the panel bundle
+  terminology.ts               customer vocabulary (terms) and page copy (copy.*)
+  brand.ts                     company/product names, logo asset paths
+  shell/                       AppShell, Sidebar, UserMenu, Footer, BrandMark, routes, navStyles
+  workspace/                   bot/account workspace: header, status pill, section nav, sections
+  console/                     ConsoleWorkspace, ResourcePanel
+  settings/                    SettingsWorkspace
+  auth/                        AuthLayout, AuthCard
 wss/extensions/wss/            SDK extension (id and Tailwind prefix: wss)
-  extension.json               manifest; declares the dashboard.serverCard replacement
-  vite.config.mjs              SDK preset + modulepreload off (see GAPS.md)
+  extension.json               replacements: dashboard.serverCard, server.files.manager; screen: overview
+  src/WssProvider.php          settings billing_url/support_url (HTTPS, optional), favicon head tags
   src/client/
-    index.tsx                  registration only (slots, replacement, shell switch)
-    terminology.ts             customer-facing vocabulary
-    status.ts                  status model, usage banding, formatting, tone classes
-    botStates.ts               tiny store: statuses published by mounted bot cards
-    styles.css                 Tailwind (wss: prefix) + WSS semantic utilities
-    components/
-      BotCard.tsx              dashboard.serverCard replacement
-      StatusBadge.tsx          dot + label
-      ResourceMeter.tsx        compact usage bar with role="meter"
-      DashboardOverview.tsx    dashboard.before slot
-      LoginBrand.tsx           auth.login.before slot
+    index.tsx                  registration only
+    terminology.ts             re-exports wss/panel/terminology
+    status.ts, botStates.ts    status model; statuses published by mounted bot cards
+    components/                BotCard, StatusBadge, ResourceMeter, DashboardOverview,
+                               FileManager (frame), ExternalLinks (sidebar links)
+    screens/OverviewScreen.tsx bot Overview page
+wss/core-patches.json          registry of the 12 upstream seam files
 ```
 
-Layering: theme tokens → extension components → SDK slots/replacements → existing panel
-components (`Empty`, `Button`, `NamedIcon`). No core file is modified or copied.
+Preference order used: theme tokens → extension SDK (slots, replacements, screens, settings)
+→ small registered core seams that delegate to `wss/panel/`. Admin (`/panel`) is untouched.
+
+## How the shell is wired
+
+1. `AuthenticatedLayout` asks `useWssCustomerRoute()` (false for `/panel`). Customer routes
+   render `WssAppShell`; admin keeps core's `NavigationBar`.
+2. `WssAppShell` provides `WssShellContext` (`sectionTarget`, `closeNavigation`). Core
+   components that are reused everywhere (`PageContentBlock`, `TitledGreyBox`,
+   `SubNavigationLayout`) check `useInWssShell()` and switch presentation only inside the shell.
+3. `SubNavigationLayout` (used by the server and account route layouts) renders
+   `WssWorkspaceLayout`, which detects the area and renders the bot header plus section
+   navigation: portalled into the sidebar's section target at `lg+`, tabs below `lg`.
+4. Section navigation reads core's route registry (`getAreaNav('server'|'account')`), so
+   extension routes and screens appear automatically; each entry keeps core's `Can`
+   permission and `ScreenGate`; `server.nav.*`/`account.nav.*` slots are rendered.
+5. Pages themselves are core routes. Console and Settings are composed by WSS (re-export
+   seams) from core components; Files is a frame around core's manager via the SDK
+   replacement; Overview is an SDK screen.
 
 ## Components
 
-| Component | Purpose | Data | Reuses core | Used in |
-| --- | --- | --- | --- | --- |
-| `BotCard` | Bot row on the dashboard | `ServerCardModel` from the panel (name, description, address, live state with CPU/RAM/disk values, limits and alarm flags) | Lives inside core's card link, polling, pagination and status bar; icons via `NamedIcon` | `dashboard.serverCard` |
-| `StatusBadge` | Status as dot + text | `botStatus(state)` | — | BotCard |
-| `ResourceMeter` | Compact usage bar | model metrics | — | BotCard |
-| `DashboardOverview` | Welcome, brand accent, summary (bots / online / offline), error + retry | `useCurrentUser()`, one `http.get('/api/client', {page:1, per_page:1})` via TanStack Query (SDK `http` and shared `queryClient`), statuses from `botStates` | `Button` | `dashboard.before` |
-| `LoginBrand` | WSS identity above the login form | `useSiteSettings().name` | — | `auth.login.before` |
-
-Considered and not built (no value yet): PageHeader/SectionHeader (core `PageHeading` and
-slot placement cover it), StatTile/EmptyState components (removed: inline stat is enough;
-a second empty panel duplicated core's), ActionButton/ConfirmationDialog (no WSS actions yet;
-the SDK exports `Button` and `Dialog`).
+| Component | Purpose | Data | Reuses core |
+| --- | --- | --- | --- |
+| `AppShell` | Grid with sidebar, sticky top bar, main, footer; mobile drawer (`inert`, Esc, focus return, closes on navigation); skip link | route, `WssShellContext` | `SearchContainer` |
+| `Sidebar` | Brand, My Bots, Account, `nav.items.*` slots, current-bot section target | — | `NavLink`, `Slot` |
+| `UserMenu` | Account, Administration (root admin), Sign out | `useCurrentUser()` | `DropdownMenu`, `useLogout` |
+| `Footer` | © year Winter Storm Systems · Powered by Pterodactyl | — | — |
+| `BotHeader` | Name, live status, description, address (copy), admin link (root admin), power controls | `useCurrentServer()`, `useServerStatus()`, socket state | `PowerButtons`, `Can`, `CopyOnClick` |
+| `BotStatusPill` | Status text + dot, `role="status"` | power state from WebSocket, server `status`, `is_transferring` | — |
+| `AreaNav` (`BotNav`, `AccountNav`) | Section links, sidebar or tabs variant | `getAreaNav` | `Can`, `ScreenGate`, `ScreenBadge`, `Slot` |
+| `ConsoleWorkspace` | Alerts, terminal, resource panel, performance history, features | core console state | `Console`, `StatGraphs`, `Features`, console slots |
+| `ResourcePanel` | CPU, memory, disk meters, uptime, network | WebSocket `stats` (`parseServerStatsPayload`), server limits | `UptimeDuration` |
+| `SettingsWorkspace` | Bot details, SFTP access, technical details, danger zone | `useCurrentServer()`, current user | `RenameServerBox`, `ReinstallServerBox`, `Can` |
+| `AuthLayout`, `AuthCard` | Brand panel (lg+), form card, no mascot | site settings | `Form` props unchanged |
+| `BotCard` | Dashboard bot row | core `ServerCardModel` | inside core's card link and polling |
+| `DashboardOverview` | Bots / online / offline strip; hidden for empty accounts; error + retry | `GET /api/client?per_page=1`, `botStates` | `Button` |
+| `OverviewScreen` | Resources, details, quick links | `useServerResources`, WebSocket `stats`, `useCurrentServer` | `useServerPermission` |
+| `FileManager` | Card frame and folder/file/selection summary around core's manager | core file listing state | core manager |
+| `ExternalLinks` | Billing/Support sidebar links | extension settings (HTTPS only; hidden when unset) | `Slot` |
 
 ## Real data only
 
-| Shown | Source | Freshness |
-| --- | --- | --- |
-| Bot list, name, description, address | core dashboard query (`/api/client`) | core |
-| Status, CPU, RAM, disk | core per-card `/api/client/servers/{uuid}/resources` polling (30 s; Wings caches ≤20 s) | core |
-| Bots total | `GET /api/client?page=1&per_page=1` → `meta.pagination.total` | 30 s stale time |
-| Online / offline counts | statuses of the cards currently mounted (`botStates`) | live with the cards |
-| Welcome name | `useCurrentUser()` (first name, else username) | session |
-| Site name on login | `useSiteSettings()` (`APP_NAME` / admin setting) | page load |
+| Shown | Source |
+| --- | --- |
+| Bot list, name, description, address | core dashboard query / `useCurrentServer()` |
+| Status | WebSocket power state; server `status` (installing, suspended, restoring); `is_transferring` |
+| CPU, memory, disk, network, uptime | WebSocket `stats` (console, overview) or core resources polling (cards, overview fallback) |
+| Limits, node, runtime image, internal ID | server attributes |
+| Bots total | `meta.pagination.total` |
+| Billing/Support links | extension settings; not rendered when empty |
 
-Nothing static stands in for runtime data. When the account has more bots than one page
-shows, the overview says the online/offline counts cover the bots on the page.
+Nothing static stands in for runtime data. Empty or unknown values render as "—" or are hidden.
 
 ## Terminology
 
-`terminology.ts` holds every customer-facing noun used by WSS components (`terms.bot`,
-`terms.bots`, …) plus `count()`/`lower()` helpers. Components never hardcode "Bot".
-Core screens keep their wording; remaining instances are listed in GAPS.md.
-
-## Shell
-
-- Global navigation: core top bar (site name, search, Dashboard, Admin, Account, Sign out),
-  restyled by tokens. "Dashboard" is the bot list, so Dashboard and Bots are one destination.
-- Sub-navigation: core horizontal tabs for the bot and account areas.
-- Sidebar mode is implemented (`SIDE_NAVIGATION` in `index.tsx`, the SDK's documented
-  `data-sub-navigation="side"` switch, `lg`+) but **off**: with a sidebar, core's console stat
-  column truncates the address port and memory limit at 1280–1440px. Enable it together with
-  the bot detail redesign. Screens below `lg` always use tabs.
-- Billing: not added. When WHMS-lite exists, add it as a `nav.items.*` slot whose URL is an
-  extension setting (`->frontend()`), never a hardcoded URL.
+Presentation only. `wss/panel/terminology.ts` holds `terms` and `copy`; seams and WSS
+components read from it. Routes, API objects, TypeScript types and PHP stay "server".
+Section titles: Startup → Runtime ("Runtime Configuration"). Remaining core wording: GAPS.md.
 
 ## Responsive decisions
 
-- BotCard: one row from `md` (identity | metrics | Manage); below `md` it stacks identity,
-  a 3-column metric grid and the Manage hint. Metrics stay visible on mobile (core hides them).
-- Overview: text and figures side by side from `lg`; stacked below with a 3-column stat row.
-- Tested at 1440, 1280, 820, 390 px: no horizontal overflow.
+- `lg+`: persistent sidebar (16rem) with the current-bot section list. Below `lg`: drawer from
+  the menu button, section tabs under the bot header.
+- Console: terminal and resource panel side by side from `lg`; stacked below. The terminal
+  frame starts at `sm` because core's terminal uses negative margins on phones.
+- Content width 72rem. Tested at 1440, 1280, 820, 390 px with no horizontal overflow.
 
 ## Build notes
 
-- Extension CSS is compiled with the `wss` prefix; only semantic colours exist, so components
-  cannot drift onto raw palette values. Brand values come from theme tokens with canonical fallbacks.
-- `@tanstack/react-query`, React and the SDK are shared with the panel (import map); icons
-  come from the panel via `NamedIcon`, so lucide is not bundled. Output: ~6 KB entry + ~4 KB card chunk.
+- `wss/panel` is TypeScript compiled by the panel's Vite build (Tailwind scans `wss/`
+  automatically); changes need `npm run build`. The bridge `index.ts` stays self-contained
+  for SDK type generation.
+- Extension CSS uses the `wss` prefix and semantic colours only; the panel's palette is reset,
+  so neither side can use raw colours such as `bg-black`.

@@ -10,8 +10,12 @@ Pterodactyl release should not conflict with WSS work.
 
 | Path | What it is | Upstream touches it? |
 | --- | --- | --- |
-| `wss/extensions/wss/` | The WSS extension (React UI via `@pterodactyl/sdk`, PHP provider, API routes) | No |
-| `themes/wss/` | The WSS theme: `theme.json`, `tokens.css`, `assets/` | No (upstream ships no `themes/`) |
+| `wss/extensions/wss/` | The WSS extension (SDK): bot cards, dashboard summary, bot Overview screen, file-manager frame, Billing/Support links, favicons, settings | No |
+| `wss/panel/` | WSS UI compiled into the panel bundle: application shell, auth layout, bot workspace, console and settings composition, terminology | No |
+| `resources/scripts/wss/` | Bridge: the only module core seams import (new path, absent upstream) | No |
+| `wss/core-patches.json` | Registry of the upstream files WSS modifies (12), checked by `wss/dev/check-core-patches.mjs` | No |
+| `wss/brand/` | Source logo artwork provided by WSS | No |
+| `themes/wss/` | The WSS theme: `theme.json`, `tokens.css`, `assets/` (Inter, logo and icons) | No (upstream ships no `themes/`) |
 | `wss/dev/` | Dev-only tooling: multi-worker server, test egg, stand-in runtime images, Playwright checks | No |
 | `wss/docs/` | `DESIGN_SYSTEM.md` (tokens, colours, contrast), `ARCHITECTURE.md` (components, data, shell), `CAPABILITY_AUDIT.md`, `GAPS.md` (limits and upstream issues), dev environment and Wings notes | No |
 | everything else | Upstream Pterodactyl, kept unmodified | Yes |
@@ -31,14 +35,15 @@ Pterodactyl release should not conflict with WSS work.
 - **Backend behaviour** (provisioning hooks, SSO for WHMS-lite) → the extension's PHP provider
   (`listenToServerOperations`, `wrapAction`, `registerRootRoutes`, `CompletesLogins`).
 
-Things the SDK cannot do yet (top bar structure, core wording such as "Servers", the
-dashboard empty state, logo placement) are listed in `docs/GAPS.md`. They are not patched;
-any future core patch must be listed under **Core patches** below so it is re-checked on
-every upstream update.
+Where the SDK cannot reach (application shell, login layout, page compositions, hardcoded
+wording) WSS uses a small number of documented seams into `wss/panel/`; see **Core patches**.
+Remaining limits are in `docs/GAPS.md`.
 
 ## Core patches
 
-None. Keep this list current; every entry is a likely merge conflict.
+12 upstream files, all presentation: see `docs/CORE_PATCHES.md` and `core-patches.json`.
+Run `node wss/dev/check-core-patches.mjs` after every upstream merge. Changes to `wss/panel/`
+or a seam need a panel rebuild (`npm run build`); theme and extension changes do not.
 
 ## Working on the extension
 

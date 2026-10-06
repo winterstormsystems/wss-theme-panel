@@ -36,7 +36,8 @@ the brand instead of a neutral grey or a second blue.
 | `--wss-surface-selected` | 14% `#3498db` over surface | Selected rows (WSS components) | — |
 | `--wss-surface-inset` | `#0a1016` | Console and editor wells | — |
 | `--wss-border-default` | `#243240` | Hairlines between surfaces (decorative) | 1.33:1 |
-| `--wss-border-strong` | `#56697d` | Input outlines | 3.07:1 on surface (WCAG 1.4.11) |
+| `--wss-border-strong` | `#56697d` | Strong outlines in WSS components | 3.07:1 on surface |
+| `--wss-surface-input` | `#223142` | Text-field fill (core `--input`) | text 11.2:1, muted 4.61:1; 1.31:1 against cards (see GAPS) |
 | `--wss-text-primary` | `#e6edf3` | Body and headings | 14.71:1 |
 | `--wss-text-secondary` | `#aab7c4` | Descriptions | 7.98:1 |
 | `--wss-text-muted` | `#8b9aab` | Labels, meta | 6.05:1 |
@@ -64,7 +65,7 @@ To switch to white labels (brand-first, AA-large only), set in `tokens.css`:
 | `--popover` | surface elevated (core also uses it for the active sidebar item) |
 | `--secondary` | surface hover (grey button hover) |
 | `--muted` / `--muted-foreground` | surface elevated / text muted |
-| `--border` / `--input` | border default / border strong |
+| `--border` / `--input` | border default / text-field fill (core draws the field border in the same colour) |
 | `--primary`, `--accent`, `--ring` | brand primary (accent = links, active nav underline, info icons) |
 | `--*-foreground` on fills | text on action |
 | `--success` / `--warning` / `--destructive` | canonical status colours |
@@ -88,7 +89,7 @@ panel's monospace stack.
 - Radius: `--radius: 0.5rem` (8px; panel scale derives sm…4xl). The public site's 25px pill
   buttons are deliberately not used in the application.
 - Density: `--spacing` left at the panel default (0.25rem).
-- Layout: `--layout-content-width: 76rem` (core 75rem), `--layout-sidebar-width: 13rem`.
+- Layout: `--layout-content-width: 72rem` (page content inside the shell), `--wss-shell-sidebar-width: 16rem`.
 - Elevation: surface ladder plus 1px borders; no new shadows. WSS components use borders only.
 
 ## Interaction states

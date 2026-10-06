@@ -1,33 +1,30 @@
 # Gaps: what the v2 SDK/theme cannot do cleanly (yet)
 
-Core patches implemented: **none**. Each item lists the cleanest future route.
+Phase 2 resolved most of the shell and wording gaps through 12 registered core seams
+(`CORE_PATCHES.md`). What remains is listed here with the cleanest future route.
 
-## Terminology (core strings are hardcoded; 1 of ~300 core components uses i18n)
+## Resolved in phase 2 (via core seams)
 
-| Where | Text | Route |
+Top bar and sidebar (WSS shell), login mascot and footer, page footer, dashboard heading,
+admin toggle and empty state, search dialog wording, settings wording (Bot Details, Reinstall
+Bot), favicons and logo (provided logo, `themes/wss/assets/brand`), "Startup" → "Runtime"
+(section title), sidebar mode on the bot workspace (console stats redesigned, no truncation).
+
+## Remaining core wording and style (customer area)
+
+| Where | Text / style | Route |
 | --- | --- | --- |
-| Dashboard heading | "Servers" | Upstream i18n, or a `dashboard.heading` slot/replacement |
-| Dashboard admin toggle | "Showing your servers" / "Showing others' servers" | Same (admins only) |
-| Dashboard empty state | "No servers yet" / "Servers you own or are invited to will appear here." | Ask upstream for a `dashboard.empty` replacement. A WSS empty panel in `dashboard.before` was tried and removed: it stacked a second empty panel above core's |
-| Global search | "Search servers" dialog title | Upstream i18n |
-| Bot Settings page | "Reinstall Server", "Change Server Details", "Server Name", "Server Description", "Server Address", "Server ID" | Upstream i18n (redesign phase may add WSS slots around them) |
-| Bot area tabs | "Startup", "Network" (acceptable wording), `ServerError` messages | Upstream i18n |
-| "Egg" | Not shown to customers in the client UI (only in `/panel` admin) | — |
-| Admin (`/panel`) | "Servers", "Eggs" | Out of scope (staff only) |
-| Login | "Login to Continue" heading | Upstream i18n |
-
-## Shell and branding
-
-- **Top bar is not replaceable.** Only `nav.items.*` slots (right side). No logo slot left of the
-  site name; on mobile core truncates the site name ("Winter Storm …").
-- **Sidebar mode truncates core console stats** at 1280–1440px (address port, memory limit),
-  so it is off until the bot detail redesign. Not a bug in the switch; a layout consequence.
-- **Login mascot** (Pterodactyl SVG) and the "© Pterodactyl Software" line are core markup.
-- **Footer** "Pterodactyl® © 2015 - 2026" on every page is core markup. Keep it unless legal
-  review says otherwise; removing it would need a core patch.
-- **Favicons / manifest**: replaceable with `registerHeadTags`, but **no production WSS logo is
-  available locally**, so the Pterodactyl favicons remain. Provide logo files to finish this.
-- Dashboard and "Bots" are one page; a separate "Bots" nav item would duplicate Dashboard.
+| Startup page | box titles "Startup Command", "Docker Image" | strings seam or upstream i18n |
+| Console | install-skipped notice "This server is configured…"; `ServerError` messages | strings seam / upstream i18n |
+| Performance history | core `StatGraphs` titles | replacement or upstream i18n |
+| Network, Backups, Schedules, Databases, Users, Activity | page internals stock (restyled by tokens and boxes) | next phase, page by page |
+| Account page | content stock | next phase |
+| Forms | core `Label` uppercase, button labels uppercase ("LOGIN") | token-level CSS or a small seam |
+| Inputs | field boundary 1.31:1 against cards: core uses `--input` as fill and border | seam on `Input` or upstream separate token |
+| Settings danger zone | double border (WSS card around core box) | style reinstall box like rename |
+| Search | icon tooltip text | strings seam |
+| "Egg" | not shown to customers | — |
+| Admin (`/panel`) | stock by decision | out of scope |
 
 ## Data
 
@@ -48,8 +45,8 @@ Core patches implemented: **none**. Each item lists the cleanest future route.
 3. SDK test runtime prints `Accessing non-existent property 'replaceRouteChunk' … circular
    dependency` (Node warning; harmless).
 
-## Potential future core patches (only if upstream does not provide a route)
+## Upstream contributions that would retire seams
 
-1. i18n of dashboard/server wording ("Server" → "Bot") — prefer contributing upstream.
-2. A logo slot or replacement in the top bar.
-3. `dashboard.empty` and `dashboard.heading` replacements — prefer contributing upstream.
+1. i18n for dashboard/server/settings wording.
+2. Replaceable authenticated layout, auth layout and area (sub-navigation) layout.
+3. `dashboard.empty` and `dashboard.heading` replacements; console/settings page compositions.
