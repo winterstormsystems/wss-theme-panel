@@ -5,8 +5,9 @@
 //
 // For every entry in wss/core-patches.json it reports whether upstream changed the file since
 // the patch was made (blob differs from upstreamBlob), and whether the WSS patch is still
-// present in the working tree. It also lists upstream files modified in the working tree that
-// are not registered. Exit code 1 when anything needs attention.
+// present in the working tree (the file contains `marker`, default "@/wss"), and whether the
+// core class names the WSS theme rules depend on still exist upstream ("styleDependencies"). It
+// also lists upstream files modified in the working tree that are not registered. Exit code 1 when anything needs attention.
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -28,13 +29,27 @@ console.log(`Checking ${registry.patches.length} WSS core patches against ${ref}
 for (const patch of registry.patches) {
     const current = blobAt(patch.path);
     const source = readFileSync(join(root, patch.path), 'utf8');
-    const applied = source.includes('@/wss');
+    const applied = source.includes(patch.marker ?? '@/wss');
     const upstream = current === null ? 'REMOVED upstream' : current === patch.upstreamBlob ? 'unchanged' : 'CHANGED upstream';
     const flag = upstream !== 'unchanged' || !applied;
     if (flag) attention++;
     console.log(`${flag ? '!!' : 'ok'}  ${patch.path}`);
     console.log(`    upstream: ${upstream}   patch present: ${applied ? 'yes' : 'NO'}   kind: ${patch.kind}   risk: ${patch.conflictRisk}`);
     if (upstream === 'CHANGED upstream') console.log(`    review:   git diff ${patch.upstreamBlob} ${current}`);
+}
+
+// Theme rules that depend on core class names (see styleDependencies in the registry).
+for (const { token, files } of registry.styleDependencies?.items ?? []) {
+    for (const file of files) {
+        let upstream = '';
+        try {
+            upstream = git('show', `${ref}:${file}`);
+        } catch {}
+        if (!upstream.includes(token)) {
+            attention++;
+            console.log(`!!  style dependency "${token}" no longer found in ${file} at ${ref} (review themes/wss/tokens.css)`);
+        }
+    }
 }
 
 const registered = new Set(registry.patches.map((p) => p.path));

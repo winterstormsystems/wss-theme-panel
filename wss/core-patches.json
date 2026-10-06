@@ -2,7 +2,7 @@
     "description": "Upstream (Pterodactyl) files modified by WSS. Kinds: 'reexport' = file replaced by a one-line re-export of a WSS module; 'branch' = small conditional added, upstream code kept; 'strings' = literals swapped for wss/panel/terminology.ts constants. upstreamBlob = git blob of the file the patch was made against. Check with: node wss/dev/check-core-patches.mjs [upstream-ref].",
     "bridge": {
         "path": "resources/scripts/wss/",
-        "note": "New WSS-owned files inside the upstream tree (not in upstream, so they never conflict). index.ts is self-contained because SDK-exported components import it and SDK type generation uses rootDir resources/scripts."
+        "note": "New WSS-owned files inside the upstream tree (not in upstream, so they never conflict). index.ts is self-contained because SDK-exported components import it and SDK type generation uses rootDir resources/scripts; it provides the shell context, through which the WSS shell hands primitive presentations (useWssPrimitive) and presentation wording (useWssWording) to the seams at runtime."
     },
     "patches": [
         {
@@ -107,11 +107,181 @@
         {
             "path": "resources/scripts/components/server/settings/ReinstallServerBox.tsx",
             "kind": "strings",
-            "purpose": "Reinstall Bot wording, explanation and confirmation dialog text.",
+            "purpose": "Reinstall Bot wording, explanation and confirmation dialog text; skipped-install-script notice in WSS wording (phase 3).",
             "owner": "wss/panel/terminology.ts (copy.settings)",
             "conflictRisk": "low",
             "upstreamBase": "origin/2.0-develop@41150ca9f",
             "upstreamBlob": "98c99cc70d3576232ded3026bb4d89c10fb119da"
+        },
+        {
+            "path": "resources/scripts/components/elements/table/DataTable.tsx",
+            "kind": "branch",
+            "purpose": "Inside the WSS shell every list (network, backups, schedules, tasks, databases, team, API keys, SSH keys) renders as the WSS responsive list: table when wide, labelled stacked rows when narrow, no horizontal scrolling. Same table instance, cells and actions.",
+            "owner": "wss/panel/ui/DataTable.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "7c6b07739cf7aef25360d0e3cb17de7fb8ecbfd8"
+        },
+        {
+            "path": "resources/scripts/components/elements/ListToolbar.tsx",
+            "kind": "branch",
+            "purpose": "Usage summary and primary actions above lists in the WSS style; summary passes through presentation wording (\"for this server\" -> \"for this bot\").",
+            "owner": "wss/panel/ui/ListToolbar.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "e64e614057ae35352e2046bf46641c31699e193a"
+        },
+        {
+            "path": "resources/scripts/components/elements/activity/ActivityLogEntry.tsx",
+            "kind": "branch",
+            "purpose": "Bot and account activity render as audit rows: description first, then actor, event code (same filter link), IP and time; activity translations reworded through an i18next post-processor (values excluded).",
+            "owner": "wss/panel/ui/ActivityEntry.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "f84a2ae449e1a0c8a04921187bed0b9c3b187f0b"
+        },
+        {
+            "path": "resources/scripts/components/elements/ScreenBlock.tsx",
+            "kind": "branch",
+            "purpose": "Error, access-denied, not-found and conflict screens (suspended, installing) render as WSS state panels without the Pterodactyl illustration; core message shown in full.",
+            "owner": "wss/panel/ui/StateBlock.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "f41a106ad4f4d59a9c5916b9f85d6821e9469beb"
+        },
+        {
+            "path": "resources/scripts/components/elements/ContentBox.tsx",
+            "kind": "branch",
+            "purpose": "Account API/SSH boxes render as single-border WSS cards with the title inside.",
+            "owner": "wss/panel/ui/ContentBox.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "3153fea42844a9f57da37a1e2218c35d673b2178"
+        },
+        {
+            "path": "resources/scripts/components/elements/dialog/Dialog.tsx",
+            "kind": "branch",
+            "purpose": "Dialog title, description, content and footer text pass through presentation wording inside the shell (\"Create server backup\" -> \"Create bot backup\"); quoted user data excluded.",
+            "owner": "wss/panel/wording.ts",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "29a19b3b962b6ca656371d31b61d7d68760d6086"
+        },
+        {
+            "path": "resources/scripts/components/dashboard/AccountOverviewContainer.tsx",
+            "kind": "reexport",
+            "purpose": "Account overview composition: prominent two-step verification security card with status, then email and password cards; core forms, dialogs and slots reused.",
+            "owner": "wss/panel/account/AccountOverview.tsx",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "3f05dbbb0b236b4bd6e499674715deca2bad0647"
+        },
+        {
+            "path": "resources/scripts/components/server/console/PowerButtons.tsx",
+            "kind": "style",
+            "purpose": "Start uses the success colour (Start green, Restart neutral, Stop red). One attribute; power behaviour unchanged.",
+            "owner": "themes/wss (success colour)",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "ddc67a2c2a9ddb835f6af15b3df2ebae4f39f6e9",
+            "marker": "color={'green'}"
+        },
+        {
+            "path": "resources/scripts/components/server/console/StatGraphs.tsx",
+            "kind": "strings",
+            "purpose": "Graph titles: CPU Usage, Memory Usage, Network Traffic.",
+            "owner": "copy.graphs",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "521520a14585164012cf8e82d39760774943ad48"
+        },
+        {
+            "path": "resources/scripts/components/server/startup/StartupContainer.tsx",
+            "kind": "strings",
+            "purpose": "Launch Command, Runtime Image, image help/locked text, Environment Variables heading, empty state.",
+            "owner": "copy.runtime",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "5aa2feb60e4ae35bb27ac69b13d3ad8c6d827f48"
+        },
+        {
+            "path": "resources/scripts/components/auth/LoginContainer.tsx",
+            "kind": "strings",
+            "purpose": "Submit button reads \"Sign in\".",
+            "owner": "copy.auth.signIn",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "c40a0e500e89eed386813fae5d47c0e490e39513"
+        },
+        {
+            "path": "resources/scripts/components/server/users/AddSubuserButton.tsx",
+            "kind": "strings",
+            "purpose": "\"New user\" -> \"Invite member\" (Team Access).",
+            "owner": "copy.team",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "84113b86208660189f1d1207bc2c0a7af46250aa"
+        },
+        {
+            "path": "resources/scripts/components/server/users/EditSubuserModal.tsx",
+            "kind": "strings",
+            "purpose": "Team member dialog: customer group titles, sentence-case permission labels, reworded descriptions, title clear of the close button. Permission keys and values unchanged.",
+            "owner": "copy.team, permissionGroupTitle, permissionLabel",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "8d051f5884818d332dfb92d781a6d766b91c41d2"
         }
-    ]
+    ],
+    "styleDependencies": {
+        "description": "Core class names and attributes the WSS theme rules (themes/wss/tokens.css, section 'WSS customer UI rules') rely on. check-core-patches.mjs verifies each token still appears in the listed upstream file.",
+        "items": [
+            {
+                "token": "border-input",
+                "files": [
+                    "resources/scripts/components/form/controls.tsx",
+                    "resources/scripts/components/ui/Select.tsx",
+                    "resources/scripts/components/ui/Checkbox.tsx",
+                    "resources/scripts/components/ui/Switch.tsx"
+                ]
+            },
+            {
+                "token": "hover:border-input",
+                "files": [
+                    "resources/scripts/components/form/controls.tsx",
+                    "resources/scripts/components/ui/Select.tsx"
+                ]
+            },
+            {
+                "token": "data-[popup-open]:border-input",
+                "files": [
+                    "resources/scripts/components/ui/Select.tsx"
+                ]
+            },
+            {
+                "token": "input-help error",
+                "files": [
+                    "resources/scripts/components/form/fields.tsx"
+                ]
+            },
+            {
+                "token": "data-slot={'empty-icon'}",
+                "files": [
+                    "resources/scripts/components/ui/empty.tsx"
+                ]
+            },
+            {
+                "token": "data-slot={'empty-title'}",
+                "files": [
+                    "resources/scripts/components/ui/empty.tsx"
+                ]
+            },
+            {
+                "token": "uppercase",
+                "files": [
+                    "resources/scripts/components/elements/Button.tsx",
+                    "resources/scripts/components/elements/Label.tsx"
+                ]
+            }
+        ]
+    }
 }
