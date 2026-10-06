@@ -20,6 +20,8 @@
         "prefix": "wss",
         "components": [
             "dashboard.serverCard",
+            "server.files.details",
+            "server.files.editor",
             "server.files.manager"
         ],
         "screens": [

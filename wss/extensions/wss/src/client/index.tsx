@@ -14,8 +14,10 @@ export default definePterodactylExtension({
         components.replace('dashboard.serverCard', { load: () => import('./components/BotCard') });
         slots.register('dashboard.before', DashboardOverview);
 
-        // Files: WSS frame around the native file browser
+        // Files: WSS frame around the native file browser, file rows and the editor
         components.replace('server.files.manager', { load: () => import('./components/FileManager') });
+        components.replace('server.files.details', { load: () => import('./components/FileRow') });
+        components.replace('server.files.editor', { load: () => import('./components/FileEditor') });
 
         // Bot overview page (declared in extension.json ui.screens)
         screens.register('overview', () => import('./screens/OverviewScreen'));
