@@ -5,7 +5,7 @@ import { useCurrentServer } from '@/api/server/queries';
 import { useWssShell } from '../context';
 import { AccountNav, BotNav, sidebarSectionClass } from './AreaNav';
 import BotHeader from './BotHeader';
-import { botSections } from './sections';
+import { accountSections, botSections, type SectionPresentation } from './sections';
 
 // Same horizontal rhythm as core's ContentContainer, so headers align with page content.
 const containerClass = 'mx-4 max-w-panel xl:mx-auto';
@@ -14,6 +14,16 @@ function SidebarSection({ children }: { children: ReactNode }) {
     const shell = useWssShell();
     if (!shell?.sectionTarget) return null;
     return createPortal(<div className={sidebarSectionClass}>{children}</div>, shell.sectionTarget);
+}
+
+function SectionHeading({ section }: { section?: SectionPresentation }) {
+    if (!section?.title) return null;
+    return (
+        <div className={`${containerClass} pt-6`}>
+            <h2 className={'text-lg font-semibold text-foreground'}>{section.title}</h2>
+            {section.description && <p className={'mt-0.5 text-sm text-muted-foreground'}>{section.description}</p>}
+        </div>
+    );
 }
 
 function BotWorkspace({ children }: { children: ReactNode }) {
@@ -38,20 +48,15 @@ function BotWorkspace({ children }: { children: ReactNode }) {
                     <BotNav server={server} variant={'tabs'} />
                 </div>
             </div>
-            {section?.title && (
-                <div className={`${containerClass} pt-6`}>
-                    <h2 className={'text-lg font-semibold text-foreground'}>{section.title}</h2>
-                    {section.description && (
-                        <p className={'mt-0.5 text-sm text-muted-foreground'}>{section.description}</p>
-                    )}
-                </div>
-            )}
+            <SectionHeading section={section} />
             {children}
         </>
     );
 }
 
 function AccountWorkspace({ children }: { children: ReactNode }) {
+    const { pathname } = useLocation();
+    const segment = pathname.replace(/^\/account\/?/, '').split('/')[0] ?? '';
     return (
         <>
             <SidebarSection>
@@ -60,6 +65,7 @@ function AccountWorkspace({ children }: { children: ReactNode }) {
             <div className={`${containerClass} pt-4 lg:hidden`}>
                 <AccountNav variant={'tabs'} />
             </div>
+            <SectionHeading section={accountSections.get(segment)} />
             {children}
         </>
     );
