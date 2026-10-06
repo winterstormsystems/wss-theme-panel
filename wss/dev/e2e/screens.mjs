@@ -151,6 +151,23 @@ for (const [width, height] of [
             await page.waitForTimeout(900);
             await checkOverflow(page, tag, label);
         }
+        await openSection(page, 'Schedules');
+        const schedule = page.locator('#wss-main').getByRole('link', { name: /Nightly restart/ }).first();
+        if (await schedule.count()) {
+            await schedule.click();
+            await page.waitForTimeout(900);
+            await checkOverflow(page, tag, 'schedule detail');
+        }
+        await openSection(page, 'Files');
+        await page.locator('#wss-main').getByRole('link', { name: 'index.js', exact: true }).click();
+        await page.waitForTimeout(1500);
+        await checkOverflow(page, tag, 'file editor');
+    }
+    for (const path of ['/auth/login', '/auth/password']) {
+        const guest = await (await browser.newContext({ viewport: { width, height } })).newPage();
+        await goto(guest, path);
+        await checkOverflow(guest, tag, path);
+        await guest.close();
     }
     for (const [path, slug] of accountPages) {
         await goto(page, path);

@@ -68,6 +68,18 @@ for (const section of ['network', 'backups', 'schedules', 'databases', 'users', 
 }
 await sub.page.screenshot({ path: `${process.env.OUT ?? '.'}/permissions-subuser-denied.png` });
 
+// Read-only file access: the editor opens, shows "Read only" and offers no save.
+await sub.page.goto(`${base}/server/${bot}/files/edit#/index.js`);
+await sub.page.waitForTimeout(2500);
+const editorText = await sub.page.locator('#wss-main').innerText();
+const saveButtons = await sub.page.locator('#wss-main').getByRole('button', { name: /^(Save|Create file|Save Content)$/ }).count();
+results.push(`editor read-only badge: ${/Read only/.test(editorText)}; save buttons: ${saveButtons}`);
+const schedulesText = await sub.page
+    .goto(`${base}/server/${bot}/schedules/1`)
+    .then(() => sub.page.waitForTimeout(1500))
+    .then(() => sub.page.locator('#wss-main').innerText());
+results.push(`direct schedule detail: ${/Access denied|permission/i.test(schedulesText) ? 'denied' : 'RENDERED'}`);
+
 results.push(`subuser bot sections: ${links.join(', ')}`);
 results.push(`subuser power buttons visible: ${powerButtons}`);
 results.push(`settings page shows rename/reinstall: ${/Bot Details|Reinstall Bot/.test(settings)}`);

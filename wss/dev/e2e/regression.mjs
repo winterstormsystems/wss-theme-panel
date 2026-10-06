@@ -122,6 +122,18 @@ await step('file manager lists files', async () => {
 });
 await page.screenshot({ path: `${out}/regression-files.png` });
 
+await step('file editor opens and saves', async () => {
+    await page.locator('#wss-main').getByRole('link', { name: 'index.js', exact: true }).click();
+    await page.getByRole('heading', { name: 'index.js', exact: true }).waitFor({ timeout: 15000 });
+    const saved = page.waitForResponse((r) => r.url().includes('/files/write') && r.request().method() === 'POST', {
+        timeout: 15000,
+    });
+    await page.getByRole('button', { name: 'Save', exact: true }).click();
+    const response = await saved;
+    if (response.status() !== 204) throw new Error(`save returned ${response.status()}`);
+    return 'saved unchanged content';
+});
+
 // Every other bot section, through the sidebar (same page, same WebSocket connection). Each
 // page must render its WSS heading and the real content or its intentional empty state.
 async function section(link, heading, content) {
@@ -137,6 +149,13 @@ await section('Runtime', 'Runtime Configuration', 'Launch Command');
 await section('Network', 'Network', /allocations? (available|for this bot)|No allocations/);
 await section('Backups', 'Backups', /backups? (have been|can)|No backups|Before update/);
 await section('Schedules', 'Schedules', /No schedules|Nightly restart/);
+await step('schedule detail page', async () => {
+    const link = page.locator('#wss-main').getByRole('link', { name: /Nightly restart/ }).first();
+    if (!(await link.count())) return 'no schedule to open';
+    await link.click();
+    await page.getByRole('heading', { name: 'Timing', exact: true }).waitFor({ timeout: 15000 });
+    await page.getByRole('heading', { name: 'Tasks', exact: true }).waitFor({ timeout: 15000 });
+});
 await section('Databases', 'Databases', /databases? (have been|can)|No databases|botdata/);
 await section('Team Access', 'Team Access', /Invite member|No team members|@/);
 await section('Settings', 'Settings', 'Bot Details');
