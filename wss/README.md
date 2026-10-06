@@ -13,7 +13,7 @@ Pterodactyl release should not conflict with WSS work.
 | `wss/extensions/wss/` | The WSS extension (React UI via `@pterodactyl/sdk`, PHP provider, API routes) | No |
 | `themes/wss/` | The WSS theme: `theme.json`, `tokens.css`, `assets/` | No (upstream ships no `themes/`) |
 | `wss/dev/` | Dev-only tooling: multi-worker server, test egg, stand-in runtime images, Playwright checks | No |
-| `wss/docs/` | Dev environment and Wings compatibility notes | No |
+| `wss/docs/` | `DESIGN_SYSTEM.md` (tokens, colours, contrast), `ARCHITECTURE.md` (components, data, shell), `CAPABILITY_AUDIT.md`, `GAPS.md` (limits and upstream issues), dev environment and Wings notes | No |
 | everything else | Upstream Pterodactyl, kept unmodified | Yes |
 
 `extensions/` (the panel's install directory) is gitignored upstream; extensions are
@@ -31,10 +31,10 @@ Pterodactyl release should not conflict with WSS work.
 - **Backend behaviour** (provisioning hooks, SSO for WHMS-lite) → the extension's PHP provider
   (`listenToServerOperations`, `wrapAction`, `registerRootRoutes`, `CompletesLogins`).
 
-Things the SDK cannot do yet: restructure the app shell (header/sidebar layout), restructure
-the console page beyond its slots, and rename core UI text (core strings are hardcoded,
-not translatable). Each such change must be a small, documented core patch, listed in
-**Core patches** below, so it can be re-checked on every upstream update.
+Things the SDK cannot do yet (top bar structure, core wording such as "Servers", the
+dashboard empty state, logo placement) are listed in `docs/GAPS.md`. They are not patched;
+any future core patch must be listed under **Core patches** below so it is re-checked on
+every upstream update.
 
 ## Core patches
 

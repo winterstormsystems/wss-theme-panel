@@ -88,5 +88,12 @@ Then `wss/dev/e2e/lifecycle.mjs` imports the egg, creates an allocation and serv
 `/api/admin`, waits for the install, starts the bot, sends a console command and reads
 stats and files. See `wss/dev/README.md`.
 
-The stand-in runtime runs its shell as PID 1, so the egg's `^C` stop doesn't reach node;
-use kill. Real yolks use an init and stop cleanly. Don't use these images in production.
+The stand-in runtime `exec`s the startup command, so the bot is PID 1 and the egg's `^C`
+stop reaches it. Don't use these images in production.
+
+## After a container restart
+
+Files survive; processes don't. Start `dockerd`, `docker start wss-mariadb`, `redis-server`,
+`wss/dev/serve.sh`, the queue worker and Wings again (the `pterodactyl_nw` network persists).
+The dashboard reads resource state through the panel's cache, so a just-started bot can show
+its previous state for up to ~20 seconds.
