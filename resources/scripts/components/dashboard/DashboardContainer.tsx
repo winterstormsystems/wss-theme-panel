@@ -1,7 +1,7 @@
 import { ComponentReplacementSession } from '@/extensions/componentSession';
 import { useEffect } from 'react';
 import { httpErrorToHuman } from '@/api/http';
-import { Server } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import ServerRow from '@/components/dashboard/ServerRow';
 import { NewLinkButton } from '@/components/elements/NewButton';
 import Spinner from '@/components/elements/Spinner';
@@ -16,6 +16,7 @@ import { getPageSearch, useDashboardSearch } from '@/router/search';
 import Slot from '@/extensions/Slot';
 import PageHeading from '@/components/elements/PageHeading';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { copy } from '@/wss/copy';
 
 function DashboardContainerContent() {
     const navigate = useNavigate();
@@ -62,16 +63,17 @@ function DashboardContainerContent() {
     }
 
     return (
-        <PageContentBlock title={'Dashboard'}>
+        <PageContentBlock title={copy.dashboard.documentTitle}>
             <PageHeading
-                title={'Servers'}
+                title={copy.dashboard.title}
+                description={copy.dashboard.description}
                 className={'mb-4'}
                 actions={
                     rootAdmin && (
                         <Switch
                             checked={showOnlyAdmin}
                             onChange={toggleShowOnlyAdmin}
-                            label={showOnlyAdmin ? "Showing others' servers" : 'Showing your servers'}
+                            label={showOnlyAdmin ? copy.dashboard.adminShowingOthers : copy.dashboard.adminShowingOwn}
                             controlPosition={'end'}
                             className={'gap-2'}
                         />
@@ -96,18 +98,20 @@ function DashboardContainerContent() {
                             <Empty className={'border bg-card'}>
                                 <EmptyHeader>
                                     <EmptyMedia variant={'icon'}>
-                                        <Server />
+                                        <Bot />
                                     </EmptyMedia>
-                                    <EmptyTitle>{showOnlyAdmin ? 'No other servers' : 'No servers yet'}</EmptyTitle>
+                                    <EmptyTitle>
+                                        {showOnlyAdmin ? copy.dashboard.emptyAdminTitle : copy.dashboard.emptyTitle}
+                                    </EmptyTitle>
                                     <EmptyDescription>
                                         {showOnlyAdmin
-                                            ? 'There are no servers owned by other users.'
-                                            : 'Servers you own or are invited to will appear here.'}
+                                            ? copy.dashboard.emptyAdminDescription
+                                            : copy.dashboard.emptyDescription}
                                     </EmptyDescription>
                                 </EmptyHeader>
                                 {rootAdmin && (
                                     <EmptyContent>
-                                        <NewLinkButton to={'/panel/servers/new'}>New server</NewLinkButton>
+                                        <NewLinkButton to={'/panel/servers/new'}>{copy.dashboard.newBot}</NewLinkButton>
                                     </EmptyContent>
                                 )}
                             </Empty>

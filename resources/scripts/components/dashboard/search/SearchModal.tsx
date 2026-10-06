@@ -16,6 +16,7 @@ import { relationshipData } from '@/api/relationships';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { emptyCompactClass } from '@/components/ui/styles';
 import { cn } from '@/lib/cn';
+import { copy } from '@/wss/copy';
 
 type Props = DialogProps;
 
@@ -38,7 +39,7 @@ export default function SearchModal({ ...props }: Props) {
     const serverList = servers?.data.slice(0, 5) ?? [];
 
     return (
-        <Dialog title={'Search servers'} {...props}>
+        <Dialog title={copy.search.title} {...props}>
             <Form form={form}>
                 <InputSpinner visible={isFetching}>
                     <form.AppField
@@ -50,13 +51,7 @@ export default function SearchModal({ ...props }: Props) {
                                     : 'Please enter at least three characters to begin searching.',
                         }}
                     >
-                        {(field) => (
-                            <field.TextField
-                                label={'Search term'}
-                                description={'Enter a server name, uuid, or allocation to begin searching.'}
-                                autoFocus
-                            />
-                        )}
+                        {(field) => <field.TextField label={'Search term'} description={copy.search.hint} autoFocus />}
                     </form.AppField>
                 </InputSpinner>
             </Form>
@@ -71,7 +66,7 @@ export default function SearchModal({ ...props }: Props) {
                         <EmptyMedia variant={'icon'}>
                             <SearchX />
                         </EmptyMedia>
-                        <EmptyTitle>No servers found</EmptyTitle>
+                        <EmptyTitle>{copy.search.empty}</EmptyTitle>
                         <EmptyDescription>
                             No servers match your search. Try a different name or address.
                         </EmptyDescription>
