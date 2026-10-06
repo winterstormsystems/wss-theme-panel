@@ -20,6 +20,7 @@ import PermissionTitleBox from '@/components/server/users/PermissionTitleBox';
 import PermissionRow from '@/components/server/users/PermissionRow';
 import { Dialog, type DialogProps } from '@/components/elements/dialog';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
+import { copy, permissionGroupTitle, permissionLabel, reword } from '@/wss/copy';
 
 type Props = {
     subuser?: Subuser;
@@ -131,19 +132,19 @@ const SubuserFormContent = ({ state }: { state: ReturnType<typeof useSubuserForm
             <PermissionTitleBox
                 key={`permission_${key}`}
                 form={form}
-                title={key}
+                title={permissionGroupTitle(key)}
                 isEditable={canEditUser}
                 editablePermissions={permissionKeys.filter((permission) => editablePermissionSet.has(permission))}
                 className={permissionBoxes.length > 0 ? 'mt-4' : undefined}
             >
-                <p className={'text-sm text-muted-foreground mb-4'}>{permissionGroup.description}</p>
+                <p className={'text-sm text-muted-foreground mb-4'}>{reword(permissionGroup.description)}</p>
                 {rows.map(({ permission, key: label, description }) => (
                     <PermissionRow
                         key={`permission_${permission}`}
                         form={form}
                         permission={permission}
-                        label={label}
-                        description={description}
+                        label={permissionLabel(label)}
+                        description={reword(description)}
                         disabled={!canEditUser || !editablePermissionSet.has(permission as SubuserPermission)}
                     />
                 ))}
@@ -162,26 +163,21 @@ const SubuserFormContent = ({ state }: { state: ReturnType<typeof useSubuserForm
     return (
         <Form form={form}>
             <SpinnerOverlay visible={isSubmitting} />
-            <div className={'flex justify-between'}>
-                <h2 className={'text-2xl'}>
-                    {subuser
-                        ? `${canEditUser ? 'Modify' : 'View'} permissions for ${subuser.attributes.email}`
-                        : 'Create new subuser'}
+            <div className={'flex flex-col gap-3 pr-10 sm:flex-row sm:items-start sm:justify-between'}>
+                <h2 className={'text-lg font-semibold break-words text-foreground'}>
+                    {subuser ? copy.team.editTitle(subuser.attributes.email, canEditUser) : copy.team.inviteTitle}
                 </h2>
                 <div>
                     <form.AppForm>
                         <form.SubmitButton className={'w-full sm:w-auto'}>
-                            {subuser ? 'Save' : 'Invite User'}
+                            {subuser ? copy.team.save : copy.team.sendInvite}
                         </form.SubmitButton>
                     </form.AppForm>
                 </div>
             </div>
             {!isRootAdmin && loggedInPermissions[0] !== '*' && (
                 <div className={'mt-4 pl-4 py-2 border-l-4 border-accent'}>
-                    <p className={'text-sm text-muted-foreground'}>
-                        Only permissions which your account is currently assigned may be selected when creating or
-                        modifying other users.
-                    </p>
+                    <p className={'text-sm text-muted-foreground'}>{copy.team.restrictedNote}</p>
                 </div>
             )}
             {!subuser && (
@@ -197,14 +193,7 @@ const SubuserFormContent = ({ state }: { state: ReturnType<typeof useSubuserForm
                                       : 'A valid email address must be provided.',
                         }}
                     >
-                        {(field) => (
-                            <field.TextField
-                                label={'User Email'}
-                                description={
-                                    'Enter the email address of the user you wish to invite as a subuser for this server.'
-                                }
-                            />
-                        )}
+                        {(field) => <field.TextField label={copy.team.emailLabel} description={copy.team.emailHelp} />}
                     </form.AppField>
                 </div>
             )}
@@ -214,7 +203,7 @@ const SubuserFormContent = ({ state }: { state: ReturnType<typeof useSubuserForm
                 <div className={'pb-6 flex justify-end'}>
                     <form.AppForm>
                         <form.SubmitButton className={'w-full sm:w-auto'}>
-                            {subuser ? 'Save' : 'Invite User'}
+                            {subuser ? copy.team.save : copy.team.sendInvite}
                         </form.SubmitButton>
                     </form.AppForm>
                 </div>
