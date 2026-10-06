@@ -5,6 +5,11 @@ import SearchContainer from '@/components/dashboard/search/SearchContainer';
 import { cn } from '@/lib/cn';
 import { brand } from '../brand';
 import { WssShellContext } from '../context';
+import { primitives } from '../ui/primitives';
+import { useWssUiRoot } from '../ui/useWssUiRoot';
+import { reword, rewordNode } from '../wording';
+
+const wording = { text: reword, node: (value: ReactNode) => rewordNode(value) };
 import BrandMark from './BrandMark';
 import Footer from './Footer';
 import Sidebar from './Sidebar';
@@ -39,7 +44,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
     const { pathname } = useLocation();
 
     const closeNavigation = useCallback(() => setOpen(false), []);
-    const context = useMemo(() => ({ sectionTarget, closeNavigation }), [sectionTarget, closeNavigation]);
+    const context = useMemo(
+        () => ({ sectionTarget, closeNavigation, primitives, wording }),
+        [sectionTarget, closeNavigation]
+    );
+    useWssUiRoot();
 
     // Close the drawer on navigation and when switching to the desktop layout.
     useEffect(() => setOpen(false), [pathname, desktop]);

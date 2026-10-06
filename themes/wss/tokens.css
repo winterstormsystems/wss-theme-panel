@@ -56,7 +56,9 @@
     --wss-surface-inset: #0a1016; /* console and editor wells */
     --wss-border-default: #243240; /* hairlines between surfaces (decorative) */
     --wss-border-strong: #56697d; /* strong outlines (WSS components): 3.07:1 on surface */
-    --wss-surface-input: #223142; /* text-field fill; core draws the field border in the same colour */
+    --wss-surface-input: #223142; /* text-field fill outside the WSS UI (admin); core draws the border in the same colour */
+    --wss-field-fill: #0f1720; /* text-field fill in the WSS customer UI (a well below the card) */
+    --wss-field-border: var(--wss-border-strong); /* field outline in the WSS customer UI: 3.07:1 on cards */
     --wss-text-primary: #e6edf3; /* 14.7:1 on surface */
     --wss-text-secondary: #aab7c4; /* 7.98:1 on surface */
     --wss-text-muted: #8b9aab; /* 6.05:1 on surface, 5.08:1 on elevated */
@@ -161,4 +163,101 @@
     /* Scrollbars */
     --scrollbar-thumb: var(--wss-border-strong);
     --scrollbar-thumb-fill: color-mix(in oklch, var(--wss-border-strong) 60%, transparent);
+}
+
+/* =========================================================================================
+ * WSS customer UI rules (forms, buttons, focus, empty states).
+ *
+ * Active only while <html data-wss-ui> is set, which the WSS shell and the WSS auth layout do
+ * (wss/panel/ui/useWssUiRoot.ts). The admin area (/panel) never sets it, so it stays stock. Rules target
+ * elements, ARIA/data attributes, core's semantic classes (input-help) and the token-role
+ * utilities for fields (border-input). They are listed in wss/core-patches.json
+ * ("styleDependencies") so check-core-patches.mjs flags them if upstream renames them.
+ */
+
+/* ---- Fields: separate fill and outline -------------------------------------------------
+ * Core draws text fields, selects, checkboxes and switches with `bg-input border-input`, so
+ * fill and outline are one colour (1.31:1 against cards in phase 2). In the WSS UI the fill is
+ * a dark well and the outline a visible stroke (3.07:1 against cards, WCAG 1.4.11). */
+:root[data-wss-ui].dark {
+    --input: var(--wss-field-fill);
+}
+
+@layer utilities {
+    /* :where() keeps the root scope at zero specificity, so core's focus, checked, error and
+       hover-highlight utilities still win over the resting outline. */
+    :where(:root[data-wss-ui]) .border-input:not(svg),
+    :where(:root[data-wss-ui]) .hover\:border-input:hover:not(svg),
+    :where(:root[data-wss-ui]) .data-\[popup-open\]\:border-input[data-popup-open]:not(svg) {
+        border-color: var(--wss-field-border);
+    }
+
+    :where(:root[data-wss-ui]) :is(input, textarea)::placeholder {
+        color: var(--wss-text-muted);
+        opacity: 1;
+    }
+
+    /* Buttons: medium weight unless a component sets its own. */
+    :where(:root[data-wss-ui]) :is(button, [role='button']) {
+        font-weight: 500;
+    }
+
+    /* Visible keyboard focus for links and buttons that do not style their own. */
+    :where(:root[data-wss-ui]) :is(a, button, [role='button'], summary):focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+    }
+}
+
+/* ---- Natural-case controls ------------------------------------------------------------
+ * Core renders buttons, labels and some links in uppercase with wide tracking ("LOGIN").
+ * WSS uses sentence/title case like the rest of the application. Unlayered on purpose: it must
+ * beat core's `uppercase` utility. Only text-transform and letter-spacing are affected. */
+:root[data-wss-ui] :is(button, label, a, [role='button'], [role='tab']) {
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/* Small all-caps captions in core screens (cron field names, variable titles, table headers)
+ * read as stock Pterodactyl; WSS keeps sentence case. WSS components that want a caption in
+ * capitals use `[text-transform:uppercase]`, which this rule does not touch. */
+:root[data-wss-ui] .uppercase {
+    text-transform: none;
+}
+
+/* ---- Validation messages: icon + text, not colour alone ------------------------------- */
+:root[data-wss-ui] .input-help.error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.375rem;
+    color: var(--destructive);
+}
+
+:root[data-wss-ui] .input-help.error::before {
+    content: '';
+    flex: none;
+    width: 0.875rem;
+    height: 0.875rem;
+    margin-top: 0.125rem;
+    background: currentColor;
+    -webkit-mask: var(--wss-icon-alert) center / contain no-repeat;
+    mask: var(--wss-icon-alert) center / contain no-repeat;
+}
+
+:root[data-wss-ui] {
+    /* lucide "circle-alert" */
+    --wss-icon-alert: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' x2='12' y1='8' y2='12'/%3E%3Cline x1='12' x2='12.01' y1='16' y2='16'/%3E%3C/svg%3E");
+}
+
+/* ---- Empty states: icon tile in the WSS style ------------------------------------------ */
+:root[data-wss-ui] [data-slot='empty-icon'][data-variant='icon'] {
+    border: 1px solid var(--border);
+    background: var(--muted);
+    color: var(--primary);
+    border-radius: var(--radius);
+}
+
+:root[data-wss-ui] [data-slot='empty-title'] {
+    font-size: 1rem;
+    font-weight: 600;
 }

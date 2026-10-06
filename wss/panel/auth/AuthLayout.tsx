@@ -1,6 +1,7 @@
 import { Outlet } from '@tanstack/react-router';
 import BrandMark from '../shell/BrandMark';
 import { brand } from '../brand';
+import { useWssUiRoot } from '../ui/useWssUiRoot';
 
 /**
  * Authentication layout (replaces core's AuthLayout via a one-line seam): brand panel on the
@@ -9,6 +10,7 @@ import { brand } from '../brand';
  */
 export default function AuthLayout() {
     const year = new Date().getFullYear();
+    useWssUiRoot();
 
     return (
         <div className={'min-h-dvh bg-background lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]'}>
@@ -23,7 +25,9 @@ export default function AuthLayout() {
                 </div>
                 <div className={'max-w-sm'}>
                     <BrandMark size={'lg'} className={'mb-8 drop-shadow-lg'} />
-                    <p className={'text-xs font-semibold uppercase tracking-[0.2em] opacity-80'}>{brand.company}</p>
+                    <p className={'text-xs font-semibold [text-transform:uppercase] tracking-[0.2em] opacity-80'}>
+                        {brand.company}
+                    </p>
                     <h2 className={'mt-2 text-3xl font-semibold leading-tight'}>{brand.productLong}</h2>
                     <p className={'mt-4 text-sm leading-relaxed opacity-90'}>
                         Run, monitor and manage your bots from one place: live console, files, runtime settings and

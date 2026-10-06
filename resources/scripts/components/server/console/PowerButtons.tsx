@@ -27,6 +27,7 @@ export default function PowerButtons({ className }: PowerButtonProps) {
         <div className={className}>
             <Can action={'control.start'}>
                 <Button
+                    color={'green'}
                     className={'flex-1'}
                     disabled={!connected || status !== 'offline'}
                     onClick={onButtonClick.bind(null, 'start')}

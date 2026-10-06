@@ -23,10 +23,12 @@ export default function UserMenu() {
                 triggerContent={
                     <>
                         <span className={'flex size-7 overflow-hidden rounded-full'}>
-                            <Avatar.User size={28} />
+                            <span aria-hidden className={'contents'}>
+                                <Avatar.User size={28} />
+                            </span>
                         </span>
                         <span className={'hidden max-w-40 truncate font-medium sm:inline'}>{user.username}</span>
-                        <ChevronDown className={'size-4 text-muted-foreground'} aria-hidden />
+                        <ChevronDown className={'hidden size-4 text-muted-foreground sm:block'} aria-hidden />
                         <span className={'sr-only'}>Open account menu</span>
                     </>
                 }

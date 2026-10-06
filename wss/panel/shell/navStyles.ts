@@ -11,4 +11,4 @@ export const navLinkClass = [
 export const navIconClass = 'size-4 shrink-0 text-muted-foreground group-data-[status=active]:text-primary';
 
 export const navSectionLabelClass =
-    'px-3 pb-1.5 pt-5 text-[0.6875rem] font-semibold uppercase tracking-wider text-muted-foreground';
+    'px-3 pb-1.5 pt-5 text-[0.6875rem] font-semibold [text-transform:uppercase] tracking-wider text-muted-foreground';
