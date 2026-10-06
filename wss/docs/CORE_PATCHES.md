@@ -11,7 +11,7 @@ It reports, per file: changed upstream since the patch (blob differs), patch sti
 any modified upstream file that is not registered, and any core class name the WSS theme rules
 depend on that disappeared upstream (`styleDependencies`). Exit code 1 means look.
 
-**Count: 25 upstream files** (12 after phase 2, 13 added in phase 3; see "Phase 3" below).
+**Count: 26 upstream files** (12 after phase 2, 14 added in phase 3; see "Phase 3" below).
 
 **Backend, API, permissions, WebSocket and Wings behaviour: unchanged.** No PHP, route,
 migration or API contract is touched.
@@ -76,15 +76,17 @@ Kinds as above, plus **style** = one presentational attribute.
 | 23 | `components/auth/LoginContainer.tsx` | strings | "Sign in" | Hardcoded string | `copy.auth.signIn` | low |
 | 24 | `components/server/users/AddSubuserButton.tsx` | strings | "Invite member" | Hardcoded string | `copy.team` | low |
 | 25 | `components/server/users/EditSubuserModal.tsx` | strings | Team member dialog wording; group titles; sentence-case labels; title clear of the close button. Permission keys/values unchanged | Hardcoded strings | `copy.team`, `permissionGroupTitle` | medium |
+| 26 | `packages/sdk/slot-coverage.spec.ts` | test | Upstream slot-coverage test also reads the WSS compositions that mount `server.console.*` and `account.overview.*` (the containers it read are now re-exports). Fixes 4 failures introduced in phase 2 and 2 from phase 3 | The test hardcodes where slots live | — | low |
 
 `ReinstallServerBox.tsx` (phase 2 seam) also shows the skipped-install-script notice in WSS wording.
 
-**Why 13 more and not fewer.** Eight are shared primitives: each one changes every page that
+**Why 14 more and not fewer.** Eight are shared primitives: each one changes every page that
 uses it (DataTable alone covers network, backups, schedules, tasks, databases, team, API keys,
 SSH keys), which is far less than patching or copying each page. Alternatives rejected: copying
 page containers into WSS (duplicates business logic, larger upgrade surface) and CSS selectors
 on core layout classes (invisible coupling). The remaining five are short string swaps where the
-text is not reachable any other way.
+text is not reachable any other way, plus the upstream slot-coverage test, which must know where
+the re-exported compositions mount their slots.
 
 ### Theme rules (no core file changed)
 

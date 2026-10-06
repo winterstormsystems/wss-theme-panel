@@ -230,6 +230,16 @@
             "conflictRisk": "medium",
             "upstreamBase": "origin/2.0-develop@41150ca9f",
             "upstreamBlob": "8d051f5884818d332dfb92d781a6d766b91c41d2"
+        },
+        {
+            "path": "packages/sdk/slot-coverage.spec.ts",
+            "kind": "test",
+            "purpose": "Slot coverage test also reads the WSS compositions that mount the console and account overview slots (server.console.*, account.overview.*), since ServerConsoleContainer and AccountOverviewContainer re-export them.",
+            "owner": "wss/panel/console, wss/panel/workspace/BotHeader.tsx, wss/panel/account",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/2.0-develop@41150ca9f",
+            "upstreamBlob": "f2cd5b292cdf3577e02bdcd23e0f0ed5d5e32780",
+            "marker": "wss/panel"
         }
     ],
     "styleDependencies": {

@@ -44,6 +44,11 @@ const anchorFiles = [
     '../../resources/scripts/components/admin/eggs/EggDetailContainer.tsx',
     '../../resources/scripts/components/admin/users/UserDetailContainer.tsx',
     '../../resources/scripts/components/admin/overview/OverviewContainer.tsx',
+    // WSS core patch: the console and account overview compositions (re-exported from the two
+    // containers above) live in /wss/panel and mount the same slots. See wss/core-patches.json.
+    '../../wss/panel/console/ConsoleWorkspace.tsx',
+    '../../wss/panel/workspace/BotHeader.tsx',
+    '../../wss/panel/account/AccountOverview.tsx',
 ];
 
 const anchorSource = anchorFiles.map((file) => readFileSync(resolve(__dirname, file), 'utf8')).join('\n');

@@ -27,7 +27,7 @@ wss/extensions/wss/            SDK extension (id and Tailwind prefix: wss)
     components/                BotCard, StatusBadge, ResourceMeter, DashboardOverview,
                                FileManager (frame), ExternalLinks (sidebar links)
     screens/OverviewScreen.tsx bot Overview page
-wss/core-patches.json          registry of the 25 upstream seam files + theme style dependencies
+wss/core-patches.json          registry of the 26 upstream seam files + theme style dependencies
 ```
 
 Preference order used: theme tokens → extension SDK (slots, replacements, screens, settings)

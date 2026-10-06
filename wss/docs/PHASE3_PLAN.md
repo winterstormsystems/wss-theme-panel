@@ -35,7 +35,7 @@ Baseline: Phase 2 architecture (shell, bridge, `wss/panel`, registered seams). B
 6. **WSS compositions**: account overview (profile, password, prominent 2FA security card) via a
    re-export seam of `AccountOverviewContainer`, like console/settings in Phase 2.
 
-Expected core patch count: 12 → about 22 (all small; each registered and checked).
+Expected core patch count: 12 → about 22 (all small; each registered and checked). Final: 26 (see CORE_PATCHES.md).
 
 ## Page work
 

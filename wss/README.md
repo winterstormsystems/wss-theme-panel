@@ -41,7 +41,7 @@ Remaining limits are in `docs/GAPS.md`.
 
 ## Core patches
 
-25 upstream files (12 from phase 2, 13 from phase 3), all presentation: see `docs/CORE_PATCHES.md` and `core-patches.json`.
+26 upstream files (12 from phase 2, 14 from phase 3), all presentation: see `docs/CORE_PATCHES.md` and `core-patches.json`.
 Run `node wss/dev/check-core-patches.mjs` after every upstream merge. Changes to `wss/panel/`
 or a seam need a panel rebuild (`npm run build`); theme and extension changes do not.
 

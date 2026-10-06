@@ -1,6 +1,6 @@
 # Gaps: what the v2 SDK/theme cannot do cleanly (yet)
 
-Phases 2 and 3 resolved the shell, wording and page-level gaps through 25 registered core seams
+Phases 2 and 3 resolved the shell, wording and page-level gaps through 26 registered core seams
 and shell-scoped theme rules (`CORE_PATCHES.md`). What remains is listed here, honestly, with the
 cleanest future route.
 
