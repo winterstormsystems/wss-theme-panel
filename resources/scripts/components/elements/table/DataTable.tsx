@@ -4,6 +4,7 @@ import { cn } from '@/lib/cn';
 import { isString } from '@/lib/objects';
 import { Empty, EmptyDescription } from '@/components/ui/empty';
 import { emptyCompactClass } from '@/components/ui/styles';
+import { useWssPrimitive } from '@/wss';
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -45,7 +46,21 @@ export default function DataTable<TData extends RowData>({
     tableClassName,
     isFetching = false,
 }: Props<TData>) {
+    // WSS core patch: inside the WSS shell, lists render as responsive WSS lists (wss/panel/ui/DataTable.tsx).
+    const WssDataTable = useWssPrimitive<Props<TData>>('DataTable');
     const rows = table.getRowModel().rows;
+
+    if (WssDataTable) {
+        return (
+            <WssDataTable
+                table={table}
+                emptyState={emptyState}
+                className={className}
+                tableClassName={tableClassName}
+                isFetching={isFetching}
+            />
+        );
+    }
 
     return (
         <div

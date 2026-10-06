@@ -51,31 +51,31 @@ export const botSections = new Map<string, SectionPresentation>(
             label: terms.network,
             icon: Network,
             title: terms.network,
-            description: `Ports and addresses assigned to your ${terms.bot.toLowerCase()}.`,
+            description: `Manage the network allocations available to your ${terms.bot.toLowerCase()}.`,
         },
         backups: {
             label: 'Backups',
             icon: Archive,
             title: 'Backups',
-            description: `Create, download and restore backups of your ${terms.bot.toLowerCase()}'s files.`,
+            description: `Create and manage recovery points for your ${terms.bot.toLowerCase()}.`,
         },
         schedules: {
             label: 'Schedules',
             icon: CalendarClock,
             title: 'Schedules',
-            description: 'Automate restarts, commands and backups.',
+            description: `Automate tasks and commands for your ${terms.bot.toLowerCase()}.`,
         },
         databases: {
             label: 'Databases',
             icon: Database,
             title: 'Databases',
-            description: `Databases available to your ${terms.bot.toLowerCase()}.`,
+            description: `Manage databases connected to your ${terms.bot.toLowerCase()}.`,
         },
         users: {
-            label: 'Users',
+            label: terms.teamAccess,
             icon: Users,
-            title: 'Users',
-            description: `Invite people to help manage this ${terms.bot.toLowerCase()}.`,
+            title: terms.teamAccess,
+            description: `Control who can access this ${terms.bot.toLowerCase()} and what they are allowed to manage.`,
         },
         settings: {
             label: 'Settings',
@@ -87,7 +87,7 @@ export const botSections = new Map<string, SectionPresentation>(
             label: 'Activity',
             icon: ScrollText,
             title: 'Activity',
-            description: `Recent actions taken on this ${terms.bot.toLowerCase()}.`,
+            description: `Review recent actions and events for your ${terms.bot.toLowerCase()}.`,
         },
     })
 );
@@ -96,10 +96,30 @@ export const botSectionOrder = [...botSections.keys()];
 
 export const accountSections = new Map<string, SectionPresentation>(
     Object.entries({
-        '': { label: 'Profile & security', icon: UserRound },
-        api: { label: 'API credentials', icon: KeyRound },
-        ssh: { label: 'SSH keys', icon: KeyRound },
-        activity: { label: 'Activity', icon: Activity },
+        '': {
+            label: 'Profile & security',
+            icon: UserRound,
+            title: terms.account,
+            description: 'Manage your profile, sign-in details and account security.',
+        },
+        api: {
+            label: 'API credentials',
+            icon: KeyRound,
+            title: 'API credentials',
+            description: 'Keys for the client API, used by your own scripts and tools.',
+        },
+        ssh: {
+            label: 'SSH keys',
+            icon: KeyRound,
+            title: 'SSH keys',
+            description: 'Public keys that can sign in to SFTP without a password.',
+        },
+        activity: {
+            label: 'Activity',
+            icon: Activity,
+            title: 'Account activity',
+            description: 'Sign-ins and changes made to your account.',
+        },
     })
 );
 
