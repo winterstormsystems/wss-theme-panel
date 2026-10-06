@@ -4,7 +4,7 @@
 import { type ComponentType, createContext, type ReactNode, useContext } from 'react';
 
 /** Core primitives the WSS shell can present differently (see useWssPrimitive). */
-export type WssPrimitiveName = 'DataTable' | 'ListToolbar' | 'ActivityLogEntry' | 'ScreenBlock' | 'ContentBox';
+export type WssPrimitiveName = 'DataTable' | 'ListToolbar' | 'ActivityLogEntry' | 'ScreenBlock' | 'ContentBox' | 'ChartBlock';
 
 // Props are checked at the seam through useWssPrimitive<P>(); the registry itself is untyped.
 export type WssPrimitives = Partial<Record<WssPrimitiveName, ComponentType<never>>>;

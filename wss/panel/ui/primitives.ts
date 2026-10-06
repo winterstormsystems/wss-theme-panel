@@ -1,5 +1,6 @@
 import type { WssPrimitives } from '@/wss';
 import ActivityEntry from './ActivityEntry';
+import ChartBlock from './ChartBlock';
 import ContentBox from './ContentBox';
 import DataTable from './DataTable';
 import ListToolbar from './ListToolbar';
@@ -15,4 +16,5 @@ export const primitives: WssPrimitives = {
     ActivityLogEntry: ActivityEntry,
     ScreenBlock: StateBlock,
     ContentBox,
+    ChartBlock,
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useWssPrimitive } from '@/wss';
 
 interface ChartBlockProps {
     title: string;
@@ -7,6 +8,16 @@ interface ChartBlockProps {
 }
 
 export default function ChartBlock({ title, legend, children }: ChartBlockProps) {
+    // WSS core patch: WSS card inside the WSS shell (wss/panel/ui/ChartBlock.tsx).
+    const WssChartBlock = useWssPrimitive<ChartBlockProps>('ChartBlock');
+    if (WssChartBlock) {
+        return (
+            <WssChartBlock title={title} legend={legend}>
+                {children}
+            </WssChartBlock>
+        );
+    }
+
     return (
         <div className={'group relative rounded-sm bg-popover pt-2 shadow-lg border-b-4 border-border'}>
             <div className={'flex items-center justify-between px-4 py-2'}>
