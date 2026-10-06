@@ -55,7 +55,8 @@
     --wss-surface-selected: color-mix(in srgb, var(--wss-brand-primary) 14%, var(--wss-surface-default));
     --wss-surface-inset: #0a1016; /* console and editor wells */
     --wss-border-default: #243240; /* hairlines between surfaces (decorative) */
-    --wss-border-strong: #56697d; /* input outlines: 3.07:1 on surface (WCAG 1.4.11) */
+    --wss-border-strong: #56697d; /* strong outlines (WSS components): 3.07:1 on surface */
+    --wss-surface-input: #223142; /* text-field fill; core draws the field border in the same colour */
     --wss-text-primary: #e6edf3; /* 14.7:1 on surface */
     --wss-text-secondary: #aab7c4; /* 7.98:1 on surface */
     --wss-text-muted: #8b9aab; /* 6.05:1 on surface, 5.08:1 on elevated */
@@ -71,8 +72,9 @@
     --wss-status-caution: color-mix(in oklab, var(--wss-status-warning) 55%, var(--wss-status-danger));
 
     /* ---- Panel layout, shape, typography, chrome ---- */
-    --layout-content-width: 76rem; /* core 75rem; keeps gutters at 1280px with the sidebar */
-    --layout-sidebar-width: 13rem; /* narrow sidebar leaves room for core's console stat column */
+    --layout-content-width: 72rem; /* page content inside the WSS shell (core default 75rem) */
+    --layout-sidebar-width: 13rem; /* core side-navigation width (unused by the WSS shell) */
+    --wss-shell-sidebar-width: 16rem; /* WSS customer shell sidebar */
     --radius: 0.5rem; /* application radius; the public site's 25px pills are intentionally not used */
     --font-sans: 'Inter Variable', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     --font-header: var(--font-sans);
@@ -94,7 +96,7 @@
     --secondary: var(--wss-surface-hover);
     --secondary-foreground: var(--wss-text-primary);
     --border: var(--wss-border-default);
-    --input: var(--wss-border-strong);
+    --input: var(--wss-surface-input); /* core uses --input as BOTH field fill and border (bg-input border-input) */
 
     /* Actions and focus. Core hover on filled buttons is `bg-primary/90`, not a token. */
     --primary: var(--wss-action-primary);
