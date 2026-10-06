@@ -17,6 +17,9 @@
     "ui": {
         "entry": "dist/client.js",
         "mode": "native",
-        "prefix": "wss"
+        "prefix": "wss",
+        "components": [
+            "dashboard.serverCard"
+        ]
     }
 }

@@ -2,3 +2,27 @@
 @import 'tailwindcss/utilities.css' layer(utilities) prefix(wss);
 @import '@pterodactyl/sdk/theme.css';
 @source './**/*.{ts,tsx}';
+
+/*
+ * WSS semantic tokens for extension components. Values come from the WSS theme
+ * (themes/wss/tokens.css, the single source of truth) with the canonical palette as a
+ * fallback, so components still render correctly if the theme is reset. With the `wss`
+ * prefix these compile to --wss-color-* properties and `wss:bg-brand` style utilities.
+ */
+@theme {
+    --color-brand: var(--wss-brand-primary, #3498db);
+    --color-brand-secondary: var(--wss-brand-secondary, #2c3e50);
+    --color-status-success: var(--wss-status-success, #2ecc71);
+    --color-status-warning: var(--wss-status-warning, #f39c12);
+    --color-status-danger: var(--wss-status-danger, #e74c3c);
+    --color-text-secondary: var(--wss-text-secondary, #aab7c4);
+}
+
+/* The brand gradient is used sparingly: login identity band and the dashboard accent rule. */
+@utility brand-gradient {
+    background-image: var(--wss-gradient-brand, linear-gradient(to right, #2c3e50, #3498db));
+}
+
+@utility brand-gradient-diagonal {
+    background-image: var(--wss-gradient-brand-diagonal, linear-gradient(135deg, #2c3e50, #3498db));
+}
