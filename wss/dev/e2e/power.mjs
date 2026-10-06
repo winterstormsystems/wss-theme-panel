@@ -9,7 +9,10 @@ const browser = await chromium.launch();
 const ctx = await browser.newContext();
 const page = await ctx.newPage();
 await page.goto(`${base}/auth/login`);
-await page.locator('input[type="text"]').first().fill(process.env.PANEL_USER ?? 'admin');
+await page
+    .locator('input[type="text"]')
+    .first()
+    .fill(process.env.PANEL_USER ?? 'admin');
 await page.locator('input[type="password"]').first().fill(process.env.PANEL_PASSWORD);
 await page.locator('button[type="submit"]').first().click();
 await page.waitForURL((u) => !u.pathname.startsWith('/auth'));

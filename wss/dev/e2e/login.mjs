@@ -14,7 +14,10 @@ page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 await page.goto(`${base}/auth/login`);
 await page.waitForLoadState('networkidle');
 await page.screenshot({ path: `${out}/01-login.png` });
-await page.locator('input[name="username"], input[type="text"]').first().fill(process.env.PANEL_USER ?? 'admin');
+await page
+    .locator('input[name="username"], input[type="text"]')
+    .first()
+    .fill(process.env.PANEL_USER ?? 'admin');
 await page.locator('input[type="password"]').first().fill(process.env.PANEL_PASSWORD);
 await page.locator('button[type="submit"]').first().click();
 await page.waitForURL((u) => !u.pathname.startsWith('/auth'), { timeout: 15000 });
