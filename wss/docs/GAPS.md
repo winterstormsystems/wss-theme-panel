@@ -1,28 +1,32 @@
 # Gaps: what the v2 SDK/theme cannot do cleanly (yet)
 
-Phase 2 resolved most of the shell and wording gaps through 12 registered core seams
-(`CORE_PATCHES.md`). What remains is listed here with the cleanest future route.
+Phases 2 and 3 resolved the shell, wording and page-level gaps through 25 registered core seams
+and shell-scoped theme rules (`CORE_PATCHES.md`). What remains is listed here, honestly, with the
+cleanest future route.
 
-## Resolved in phase 2 (via core seams)
+## Resolved
 
-Top bar and sidebar (WSS shell), login mascot and footer, page footer, dashboard heading,
-admin toggle and empty state, search dialog wording, settings wording (Bot Details, Reinstall
-Bot), favicons and logo (provided logo, `themes/wss/assets/brand`), "Startup" → "Runtime"
-(section title), sidebar mode on the bot workspace (console stats redesigned, no truncation).
+- Phase 2: top bar and sidebar (WSS shell), login mascot and footer, page footer, dashboard
+  heading/empty state, search wording, settings wording, favicons and logo, sidebar mode.
+- Phase 3: Startup Command/Docker Image (now Launch Command/Runtime Image), install-skipped
+  notice, `ServerError`/access denied/not found/conflict screens, graph titles, Network,
+  Backups, Schedules list, Databases, Team Access (including the permission dialog), Activity,
+  Account (overview, API, SSH, activity), uppercase labels/buttons/captions, field contrast
+  (outline 3.07:1 against cards), settings danger-zone double border, "LOGIN" → "Sign in".
 
-## Remaining core wording and style (customer area)
+## Remaining stock presentation (customer area)
 
-| Where | Text / style | Route |
+| Where | What still looks/reads like core | Route |
 | --- | --- | --- |
-| Startup page | box titles "Startup Command", "Docker Image" | strings seam or upstream i18n |
-| Console | install-skipped notice "This server is configured…"; `ServerError` messages | strings seam / upstream i18n |
-| Performance history | core `StatGraphs` titles | replacement or upstream i18n |
-| Network, Backups, Schedules, Databases, Users, Activity | page internals stock (restyled by tokens and boxes) | next phase, page by page |
-| Account page | content stock | next phase |
-| Forms | core `Label` uppercase, button labels uppercase ("LOGIN") | token-level CSS or a small seam |
-| Inputs | field boundary 1.31:1 against cards: core uses `--input` as fill and border | seam on `Input` or upstream separate token |
-| Settings danger zone | double border (WSS card around core box) | style reinstall box like rename |
-| Search | icon tooltip text | strings seam |
+| Schedule detail (`/schedules/:id`) | header block and the five cron boxes use core layout (WSS colours, sentence case) | composition seam like Settings |
+| Performance history | core `ChartBlock` cards (larger title, lighter surface than WSS cards) | ChartBlock branch seam |
+| File manager internals, file editor | core layout inside the WSS frame | file manager composition (next phase) |
+| Toasts from the WebSocket handler | "Failed to start server connection", "We're having some trouble connecting to your server" | reword in `AppToaster` or `WebsocketHandler` strings seam |
+| Forgot password / 2FA checkpoint | "Return to Login" link text (no longer uppercase) | strings seams in the two auth containers |
+| Create backup dialog | field help ".pteroignore … server directory" (field props are not reworded) | strings seam in `CreateBackupButton` |
+| Egg feature modals (Java version, EULA, disk space) | "This server …" | only shown for specific eggs; strings seams if those eggs are offered |
+| Console terminal | Wings' own lines ("[Pterodactyl Daemon]: …") | Wings output; out of scope (no Wings changes) |
+| Team Access avatars | Gravatar images (external; blocked in the dev sandbox) | core behaviour |
 | "Egg" | not shown to customers | — |
 | Admin (`/panel`) | stock by decision | out of scope |
 

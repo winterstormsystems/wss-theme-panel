@@ -17,7 +17,7 @@ container (PHP 8.3, Node 22, Docker 29, MariaDB 11.4, Redis 7, Go 1.24).
 docker run -d --name wss-mariadb -p 127.0.0.1:3306:3306 \
   -e MARIADB_ROOT_PASSWORD=root -e MARIADB_DATABASE=panel \
   -e MARIADB_USER=pterodactyl -e MARIADB_PASSWORD=pterodactyl mariadb:11.4
-redis-server --daemonize yes
+redis-server --daemonize yes --dir /tmp   # keep dump.rdb out of the repository
 
 composer install
 npm ci && npm run build

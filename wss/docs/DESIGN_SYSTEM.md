@@ -37,7 +37,9 @@ the brand instead of a neutral grey or a second blue.
 | `--wss-surface-inset` | `#0a1016` | Console and editor wells | — |
 | `--wss-border-default` | `#243240` | Hairlines between surfaces (decorative) | 1.33:1 |
 | `--wss-border-strong` | `#56697d` | Strong outlines in WSS components | 3.07:1 on surface |
-| `--wss-surface-input` | `#223142` | Text-field fill (core `--input`) | text 11.2:1, muted 4.61:1; 1.31:1 against cards (see GAPS) |
+| `--wss-surface-input` | `#223142` | Text-field fill outside the WSS UI (admin; core `--input`) | — |
+| `--wss-field-fill` | `#0f1720` | Text-field fill in the WSS customer UI (a well below the card) | text 15.27:1, muted 6.28:1 |
+| `--wss-field-border` | `#56697d` | Field outline in the WSS customer UI | 3.07:1 against cards, 3.19:1 against the fill (WCAG 1.4.11) |
 | `--wss-text-primary` | `#e6edf3` | Body and headings | 14.71:1 |
 | `--wss-text-secondary` | `#aab7c4` | Descriptions | 7.98:1 |
 | `--wss-text-muted` | `#8b9aab` | Labels, meta | 6.05:1 |
@@ -92,6 +94,21 @@ panel's monospace stack.
 - Layout: `--layout-content-width: 72rem` (page content inside the shell), `--wss-shell-sidebar-width: 16rem`.
 - Elevation: surface ladder plus 1px borders; no new shadows. WSS components use borders only.
 
+## Forms and buttons (WSS customer UI)
+
+Theme rules scoped to `<html data-wss-ui>` (end of `tokens.css`):
+
+- Fields, selects, checkboxes and switches: dark fill + visible outline; focus keeps core's
+  blue border and ring; errors keep the red border and add an icon before the message, so
+  validation never relies on colour alone.
+- Case: buttons, labels, links and core captions in natural case ("Sign in", "Save", "Start").
+  WSS components that want small capitals use `[text-transform:uppercase]` explicitly.
+- Button variants (core colours, WSS tokens): primary = blue fill; secondary = grey/outline;
+  success = green; danger = red; ghost = text button. Power controls: Start = success,
+  Restart = neutral, Stop/Kill = danger; disabled keeps core's 50% opacity and is not clickable.
+- Destructive areas: one red-tinted card ("Danger zone" heading with icon); destructive buttons
+  inside it use red text and outline.
+
 ## Interaction states
 
 | State | Treatment |
@@ -118,3 +135,15 @@ panel's monospace stack.
 
 Every status is a coloured dot **and** a text label. Usage bars: brand blue normally, amber
 from 75%, red from 90% or when the panel raises its own alarm flag.
+
+## Terminology decisions (phase 3)
+
+| Core | WSS | Why |
+| --- | --- | --- |
+| Startup Command | Launch Command | "Start" is the power action; "Launch" avoids two meanings for one word |
+| Docker Image | Runtime Image | Still an image; named for what it provides. Values (image names) unchanged |
+| Variables | Environment Variables | What they are inside the container |
+| Users / Subusers (bot) | Team Access / team member | Route, API and types stay `users`/subuser |
+| Permission groups (`control`, `allocation`, …) | Console & power, Network, … | Wording only; every permission value unchanged |
+| CPU Load / Memory / Network | CPU Usage / Memory Usage / Network Traffic | Plain language |
+| Login | Sign in | Application language |

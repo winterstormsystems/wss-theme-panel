@@ -8,7 +8,10 @@ node wss/dev/check-core-patches.mjs            # against origin/2.0-develop (or 
 ```
 
 It reports, per file: changed upstream since the patch (blob differs), patch still present,
-and any modified upstream file that is not registered. Exit code 1 means look.
+any modified upstream file that is not registered, and any core class name the WSS theme rules
+depend on that disappeared upstream (`styleDependencies`). Exit code 1 means look.
+
+**Count: 25 upstream files** (12 after phase 2, 13 added in phase 3; see "Phase 3" below).
 
 **Backend, API, permissions, WebSocket and Wings behaviour: unchanged.** No PHP, route,
 migration or API contract is touched.
@@ -20,9 +23,15 @@ no such path, so it never conflicts). Seams import only from it:
 
 | File | Exposes | Note |
 | --- | --- | --- |
-| `index.ts` | `WssShellContext`, `useInWssShell` | Self-contained on purpose: SDK-exported components (`PageContentBlock`, `TitledGreyBox`) import it, and `npm run build` regenerates SDK types with `rootDir: resources/scripts`. An import that leaves that directory breaks the build (found during this phase). |
+| `index.ts` | `WssShellContext`, `useInWssShell`, `useWssPrimitive`, `useWssWording` | Self-contained on purpose: SDK-exported components (`PageContentBlock`, `TitledGreyBox`) import it, and `npm run build` regenerates SDK types with `rootDir: resources/scripts`. An import that leaves that directory breaks the build (found during this phase). |
 | `shell.ts` | `WssAppShell`, `WssWorkspaceLayout`, `useWssCustomerRoute` | → `wss/panel/` |
-| `auth.ts`, `console.ts`, `settings.ts`, `copy.ts` | auth layout/card, console, settings, wording | → `wss/panel/` (split so the console stays in its lazy chunk) |
+| `auth.ts`, `console.ts`, `settings.ts`, `account.ts`, `copy.ts` | auth layout/card, console, settings, account overview, wording | → `wss/panel/` (split so the console stays in its lazy chunk) |
+
+**Runtime registry (phase 3).** Several primitives are SDK-exported (`ScreenBlock`, `Dialog`), so
+they cannot import `wss/panel` statically. The WSS shell puts its presentations and its wording
+function into `WssShellContext`; seams read them with `useWssPrimitive<Props>('DataTable')` and
+`useWssWording()`. Outside the shell (admin) both return `undefined` and core renders unchanged.
+Generated SDK typings stay identical because the seams keep their exported signatures.
 
 The UI itself lives in `wss/panel/` and uses core modules through the `@/` alias (Tailwind's
 automatic source detection already scans `wss/`, so no build configuration changes).
@@ -47,6 +56,42 @@ re-creating the line); **branch** = small conditional added, upstream code kept;
 | 10 | `components/dashboard/search/SearchModal.tsx` | strings | "Search bots", hint, "No bots found" | Hardcoded strings | 3 literals | `copy.search` | low |
 | 11 | `components/server/settings/RenameServerBox.tsx` | strings | Bot Details / Bot Name / Bot Description | Hardcoded strings | 3 literals | `copy.settings` | low |
 | 12 | `components/server/settings/ReinstallServerBox.tsx` | strings | Reinstall Bot title, button, explanation, confirmation | Hardcoded strings | 6 literals | `copy.settings` | low |
+
+### Phase 3
+
+Kinds as above, plus **style** = one presentational attribute.
+
+| # | Upstream file | Kind | Behaviour changed | Why the SDK/theme could not | WSS owner | Risk |
+| --- | --- | --- | --- | --- | --- | --- |
+| 13 | `components/elements/table/DataTable.tsx` | branch | Every customer list renders as the WSS responsive list (table when wide, labelled stacked rows when narrow, no horizontal scroll); empty states reworded | No list replacement; one primitive serves 8 pages | `wss/panel/ui/DataTable.tsx` | low |
+| 14 | `components/elements/ListToolbar.tsx` | branch | Usage summary + actions in WSS style, summary reworded | Summaries are core strings | `wss/panel/ui/ListToolbar.tsx` | low |
+| 15 | `components/elements/activity/ActivityLogEntry.tsx` | branch | Activity as audit rows (description, actor, event code, IP, time); "server" wording in translations | Hardcoded markup | `wss/panel/ui/ActivityEntry.tsx` | low |
+| 16 | `components/elements/ScreenBlock.tsx` | branch | Error/denied/not-found/conflict screens as WSS state panels, no Pterodactyl illustration | Hardcoded markup + SVG | `wss/panel/ui/StateBlock.tsx` | low |
+| 17 | `components/elements/ContentBox.tsx` | branch | Account API/SSH boxes as single-border WSS cards | Hardcoded markup | `wss/panel/ui/ContentBox.tsx` | low |
+| 18 | `components/elements/dialog/Dialog.tsx` | branch | Dialog text through presentation wording (quoted user data excluded) | Dialog texts spread over ~10 files | `wss/panel/wording.ts` | medium |
+| 19 | `components/dashboard/AccountOverviewContainer.tsx` | reexport | Account overview: 2FA security card with status, email and password cards; core forms and slots | Page composition | `wss/panel/account/AccountOverview.tsx` | low |
+| 20 | `components/server/console/PowerButtons.tsx` | style | Start uses the success colour | Button colour is a prop | — | low |
+| 21 | `components/server/console/StatGraphs.tsx` | strings | CPU Usage, Memory Usage, Network Traffic | Hardcoded strings | `copy.graphs` | low |
+| 22 | `components/server/startup/StartupContainer.tsx` | strings | Launch Command, Runtime Image, Environment Variables, help texts | Hardcoded strings | `copy.runtime` | medium |
+| 23 | `components/auth/LoginContainer.tsx` | strings | "Sign in" | Hardcoded string | `copy.auth.signIn` | low |
+| 24 | `components/server/users/AddSubuserButton.tsx` | strings | "Invite member" | Hardcoded string | `copy.team` | low |
+| 25 | `components/server/users/EditSubuserModal.tsx` | strings | Team member dialog wording; group titles; sentence-case labels; title clear of the close button. Permission keys/values unchanged | Hardcoded strings | `copy.team`, `permissionGroupTitle` | medium |
+
+`ReinstallServerBox.tsx` (phase 2 seam) also shows the skipped-install-script notice in WSS wording.
+
+**Why 13 more and not fewer.** Eight are shared primitives: each one changes every page that
+uses it (DataTable alone covers network, backups, schedules, tasks, databases, team, API keys,
+SSH keys), which is far less than patching or copying each page. Alternatives rejected: copying
+page containers into WSS (duplicates business logic, larger upgrade surface) and CSS selectors
+on core layout classes (invisible coupling). The remaining five are short string swaps where the
+text is not reachable any other way.
+
+### Theme rules (no core file changed)
+
+`themes/wss/tokens.css` ("WSS customer UI rules") applies only while `<html data-wss-ui>` is set
+by the WSS shell or auth layout: field fill/outline split (`--input` fill + `border-input`
+outline), sentence-case buttons/labels/captions, focus rings, validation icon, empty-state tile.
+The core class names they rely on are listed in `styleDependencies` and checked by the script.
 
 Risk = likelihood that an upstream change to the file conflicts with the patch.
 
