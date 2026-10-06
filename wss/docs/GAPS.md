@@ -14,21 +14,23 @@ cleanest future route.
   Account (overview, API, SSH, activity), uppercase labels/buttons/captions, field contrast
   (outline 3.07:1 against cards), settings danger-zone double border, "LOGIN" → "Sign in".
 
-## Remaining stock presentation (customer area)
+## Resolved in phase 4
 
-| Where | What still looks/reads like core | Route |
+Schedule detail page, performance graph cards, file manager rows and frame, file editor frame,
+connection toasts and reconnect banner, "Return to Login" and other auth texts, backup help
+"server directory", Bot Details labels (without the old seam).
+
+## Remaining (customer area)
+
+| Where | What | Decision |
 | --- | --- | --- |
-| Schedule detail (`/schedules/:id`) | header block and the five cron boxes use core layout (WSS colours, sentence case) | composition seam like Settings |
-| Performance history | core `ChartBlock` cards (larger title, lighter surface than WSS cards) | ChartBlock branch seam |
-| File manager internals, file editor | core layout inside the WSS frame | file manager composition (next phase) |
-| Toasts from the WebSocket handler | "Failed to start server connection", "We're having some trouble connecting to your server" | reword in `AppToaster` or `WebsocketHandler` strings seam |
-| Forgot password / 2FA checkpoint | "Return to Login" link text (no longer uppercase) | strings seams in the two auth containers |
-| Create backup dialog | field help ".pteroignore … server directory" (field props are not reworded) | strings seam in `CreateBackupButton` |
-| Egg feature modals (Java version, EULA, disk space) | "This server …" | only shown for specific eggs; strings seams if those eggs are offered |
-| Console terminal | Wings' own lines ("[Pterodactyl Daemon]: …") | Wings output; out of scope (no Wings changes) |
-| Team Access avatars | Gravatar images (external; blocked in the dev sandbox) | core behaviour |
-| "Egg" | not shown to customers | — |
-| Admin (`/panel`) | stock by decision | out of scope |
+| Toast titles raised directly by API hooks | e.g. "Server details updated", "Unable to reinstall server", "Unable to update subuser" | ~20 core files call sonner directly; no single seam. Descriptions are fine. Candidate for a future upstream i18n hook; not worth 20 patches |
+| File manager toolbar and selection bar | breadcrumbs, New folder/Upload/New file, mass-action bar are core parts inside the WSS frame (WSS colours and case) | Kept: replacing them would duplicate core file logic |
+| Editor breadcrumb indent | core breadcrumbs keep the checkbox gutter on the editor page | Minor; core markup |
+| Console terminal | Wings' own lines (`[Pterodactyl Daemon]: …`) | Intentional: raw output stays authentic |
+| Egg feature modals | Java / EULA / Steam disk / GSL / Hytale / PID limit | Only for eggs that declare them; WSS bot eggs declare none. Left for compatibility |
+| Team Access avatars | Gravatar (external; blocked in the dev sandbox) | Core behaviour |
+| Admin (`/panel`) | stock | Out of scope |
 
 ## Data
 
@@ -39,6 +41,12 @@ cleanest future route.
   scripts must pace themselves.
 
 ## Upstream bugs found
+
+0. **File manager queries the editor path as a directory.** Opening a file runs
+   `GET /files/list?directory=/index.js` (Wings 500 "not a directory") while the lazy editor route
+   loads: `FileManagerContainer` stays mounted and derives the directory from the new hash.
+   Reproduced with the WSS extension disabled; harmless for users (no toast), visible in the
+   network log and Wings log. Not patched.
 
 1. **SDK Vite preset + lazy chunks:** base `/` makes Vite's modulepreload links point at
    `/chunk.*.js` (404, text/html, console errors) while the real import is relative.

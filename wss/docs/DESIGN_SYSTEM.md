@@ -146,4 +146,5 @@ from 75%, red from 90% or when the panel raises its own alarm flag.
 | Users / Subusers (bot) | Team Access / team member | Route, API and types stay `users`/subuser |
 | Permission groups (`control`, `allocation`, …) | Console & power, Network, … | Wording only; every permission value unchanged |
 | CPU Load / Memory / Network | CPU Usage / Memory Usage / Network Traffic | Plain language |
-| Login | Sign in | Application language |
+| Login, Return to Login | Sign in, Return to sign in | Application language (all auth screens) |
+| Failed to start server connection (etc.) | Unable to connect to this bot (etc.) | Titles only; technical descriptions kept |

@@ -11,7 +11,8 @@ It reports, per file: changed upstream since the patch (blob differs), patch sti
 any modified upstream file that is not registered, and any core class name the WSS theme rules
 depend on that disappeared upstream (`styleDependencies`). Exit code 1 means look.
 
-**Count: 26 upstream files** (12 after phase 2, 14 added in phase 3; see "Phase 3" below).
+**Count: 26 upstream files** (12 after phase 2, 26 after phase 3, still 26 after phase 4: four
+removed, four added; see "Phase 4" below). 26 is the ceiling (`CUSTOMER_UI_FREEZE.md`).
 
 **Backend, API, permissions, WebSocket and Wings behaviour: unchanged.** No PHP, route,
 migration or API contract is touched.
@@ -54,7 +55,7 @@ re-creating the line); **branch** = small conditional added, upstream code kept;
 | 8 | `components/server/settings/SettingsContainer.tsx` | reexport | Settings page: Bot details, SFTP access, technical details, danger zone; each block behind the same `Can` permission as before | Page composition not replaceable | ~80-line composition; core rename/reinstall boxes reused | `wss/panel/settings/SettingsWorkspace.tsx` | medium |
 | 9 | `components/dashboard/DashboardContainer.tsx` | strings | "Servers" → "My Bots" + subtitle; admin toggle and empty state wording; empty icon Server → Bot | Hardcoded strings, no i18n | 6 literals, 1 icon | `copy.dashboard` | medium |
 | 10 | `components/dashboard/search/SearchModal.tsx` | strings | "Search bots", hint, "No bots found" | Hardcoded strings | 3 literals | `copy.search` | low |
-| 11 | `components/server/settings/RenameServerBox.tsx` | strings | Bot Details / Bot Name / Bot Description | Hardcoded strings | 3 literals | `copy.settings` | low |
+| 11 | `components/server/settings/RenameServerBox.tsx` | strings | **Removed in phase 4** (see below). Bot Details / Bot Name / Bot Description | Hardcoded strings | 3 literals | `copy.settings` | low |
 | 12 | `components/server/settings/ReinstallServerBox.tsx` | strings | Reinstall Bot title, button, explanation, confirmation | Hardcoded strings | 6 literals | `copy.settings` | low |
 
 ### Phase 3
@@ -70,10 +71,10 @@ Kinds as above, plus **style** = one presentational attribute.
 | 17 | `components/elements/ContentBox.tsx` | branch | Account API/SSH boxes as single-border WSS cards | Hardcoded markup | `wss/panel/ui/ContentBox.tsx` | low |
 | 18 | `components/elements/dialog/Dialog.tsx` | branch | Dialog text through presentation wording (quoted user data excluded) | Dialog texts spread over ~10 files | `wss/panel/wording.ts` | medium |
 | 19 | `components/dashboard/AccountOverviewContainer.tsx` | reexport | Account overview: 2FA security card with status, email and password cards; core forms and slots | Page composition | `wss/panel/account/AccountOverview.tsx` | low |
-| 20 | `components/server/console/PowerButtons.tsx` | style | Start uses the success colour | Button colour is a prop | — | low |
-| 21 | `components/server/console/StatGraphs.tsx` | strings | CPU Usage, Memory Usage, Network Traffic | Hardcoded strings | `copy.graphs` | low |
+| 20 | `components/server/console/PowerButtons.tsx` | style | **Removed in phase 4** (see below). Start uses the success colour | Button colour is a prop | — | low |
+| 21 | `components/server/console/StatGraphs.tsx` | strings | **Removed in phase 4** (see below). CPU Usage, Memory Usage, Network Traffic | Hardcoded strings | `copy.graphs` | low |
 | 22 | `components/server/startup/StartupContainer.tsx` | strings | Launch Command, Runtime Image, Environment Variables, help texts | Hardcoded strings | `copy.runtime` | medium |
-| 23 | `components/auth/LoginContainer.tsx` | strings | "Sign in" | Hardcoded string | `copy.auth.signIn` | low |
+| 23 | `components/auth/LoginContainer.tsx` | strings | **Removed in phase 4** (see below). "Sign in" | Hardcoded string | `copy.auth.signIn` | low |
 | 24 | `components/server/users/AddSubuserButton.tsx` | strings | "Invite member" | Hardcoded string | `copy.team` | low |
 | 25 | `components/server/users/EditSubuserModal.tsx` | strings | Team member dialog wording; group titles; sentence-case labels; title clear of the close button. Permission keys/values unchanged | Hardcoded strings | `copy.team`, `permissionGroupTitle` | medium |
 | 26 | `packages/sdk/slot-coverage.spec.ts` | test | Upstream slot-coverage test also reads the WSS compositions that mount `server.console.*` and `account.overview.*` (the containers it read are now re-exports). Fixes 4 failures introduced in phase 2 and 2 from phase 3 | The test hardcodes where slots live | — | low |
@@ -87,6 +88,33 @@ page containers into WSS (duplicates business logic, larger upgrade surface) and
 on core layout classes (invisible coupling). The remaining five are short string swaps where the
 text is not reachable any other way, plus the upstream slot-coverage test, which must know where
 the re-exported compositions mount their slots.
+
+### Phase 4 (count unchanged: 26)
+
+Removed (file restored to upstream, behaviour now reached another way):
+
+| Was | Now |
+| --- | --- |
+| `components/auth/LoginContainer.tsx` (Sign in) | WSS `AuthCard` (already a seam target) maps core's auth texts by exact match on all four auth screens |
+| `components/server/console/PowerButtons.tsx` (green Start) | `BotHeader` scopes `--primary` to the success colour around core's `PowerButtons` (style dependency recorded) |
+| `components/server/console/StatGraphs.tsx` (graph titles) | `ChartBlock` seam maps the titles |
+| `components/server/settings/RenameServerBox.tsx` (labels) | `fields.tsx` and `TitledGreyBox` seams reword labels and box titles |
+
+Added:
+
+| # | Upstream file | Kind | Behaviour changed | Why not SDK/theme | WSS owner | Risk |
+| --- | --- | --- | --- | --- | --- | --- |
+| P4-1 | `components/server/console/ChartBlock.tsx` | branch | Performance cards as WSS cards, WSS titles, offline note | Chart card markup hardcoded | `wss/panel/ui/ChartBlock.tsx` | low |
+| P4-2 | `components/server/schedules/ScheduleEditContainer.tsx` | reexport | Schedule detail as a WSS composition (core query, task columns, actions) | Page composition not replaceable | `wss/panel/schedules/ScheduleDetail.tsx` | low |
+| P4-3 | `components/server/WebsocketHandler.tsx` | strings | Connection toast titles and the reconnect banner ("Unable to connect to this bot") | Strings hardcoded; toasts are raised here | `copy.connection` | medium |
+| P4-4 | `components/form/fields.tsx` | branch | Field labels, help and validation text through wording in the shell | Field text passes through render-props no other seam reaches | `wss/panel/wording.ts` | medium |
+
+`TitledGreyBox` (phase 2 seam) now also rewords its title and body in the shell.
+
+The file manager rows (`server.files.details`), the file manager frame (`server.files.manager`,
+using core's own `parts.list`) and the editor frame (`server.files.editor`, core `parts` with a
+WSS save action calling `model.save()` and a labelled language picker) are **extension
+replacements**: no core patch.
 
 ### Theme rules (no core file changed)
 

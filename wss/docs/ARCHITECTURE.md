@@ -11,9 +11,10 @@ wss/panel/                     WSS application UI, compiled into the panel bundl
   console/                     ConsoleWorkspace, ResourcePanel
   settings/                    SettingsWorkspace
   account/                     AccountOverview (2FA security card, email, password)
+  schedules/                   ScheduleDetail (schedule detail page)
   auth/                        AuthLayout, AuthCard
   ui/                          WSS presentations of core primitives (DataTable, ListToolbar,
-                               ActivityEntry, StateBlock, ContentBox), Card/Badge,
+                               ActivityEntry, StateBlock, ContentBox, ChartBlock), Card/Badge,
                                primitives.ts (registry), useWssUiRoot (html data-wss-ui)
   wording.ts                   presentation wording for core-authored text (reword/rewordNode)
   vitest.config.mts            unit tests for wss/panel (*.spec.ts)
@@ -25,9 +26,10 @@ wss/extensions/wss/            SDK extension (id and Tailwind prefix: wss)
     terminology.ts             re-exports wss/panel/terminology
     status.ts, botStates.ts    status model; statuses published by mounted bot cards
     components/                BotCard, StatusBadge, ResourceMeter, DashboardOverview,
-                               FileManager (frame), ExternalLinks (sidebar links)
+                               FileManager (frame), FileRow (row details), FileEditor (editor
+                               frame), fileTypes (icon/label hints), ExternalLinks (sidebar links)
     screens/OverviewScreen.tsx bot Overview page
-wss/core-patches.json          registry of the 26 upstream seam files + theme style dependencies
+wss/core-patches.json          registry of the 26 upstream seam files (frozen ceiling, see CUSTOMER_UI_FREEZE.md) + theme style dependencies
 ```
 
 Preference order used: theme tokens → extension SDK (slots, replacements, screens, settings)
