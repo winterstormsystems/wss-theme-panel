@@ -11,6 +11,7 @@ import Avatar from '@/components/Avatar';
 import type { ActivityLog } from '@/api/activity';
 import { isNumber, isString } from '@/lib/objects';
 import { relationshipAttributes } from '@/api/relationships';
+import { useWssPrimitive } from '@/wss';
 
 type ActorAttributes = { username?: string; email?: string };
 
@@ -48,6 +49,10 @@ const wrapProperties = (properties: TranslationValues): TranslationValues =>
     Object.fromEntries(Object.entries(properties).map(([key, value]) => [key, wrapProperty(value)]));
 
 export default function ActivityLogEntry({ activity, children }: Props) {
+    // WSS core patch: audit-row presentation inside the WSS shell (wss/panel/ui/ActivityEntry.tsx).
+    const WssActivityLogEntry = useWssPrimitive<Props>('ActivityLogEntry');
+    if (WssActivityLogEntry) return <WssActivityLogEntry activity={activity}>{children}</WssActivityLogEntry>;
+
     const { attributes } = activity;
     const actor = relationshipAttributes<ActorAttributes>(attributes.relationships?.actor);
     const properties = wrapProperties(attributes.properties);
