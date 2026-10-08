@@ -1,0 +1,112 @@
+{
+    "description": "Upstream (Pterodactyl v1) files modified by WSS for the v1 brand reskin. Every patched file carries a \"WSS\" comment marker. upstreamBlob = git blob of the file the patch was made against. Check with: node wss/dev/check-core-patches.mjs [upstream-ref].",
+    "owned": {
+        "paths": [
+            "public/wss/",
+            "resources/scripts/assets/wss/",
+            "wss/"
+        ],
+        "note": "New WSS-owned files; not in upstream, so they never conflict."
+    },
+    "patches": [
+        {
+            "path": "tailwind.config.js",
+            "kind": "palette",
+            "purpose": "Core colour scales keep their names; values become the WSS palette (gray/neutral ladder, brand blue, success/danger/warning, terminal black). Inter as sans and header font.",
+            "marker": "WSS",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "7c814bd61bf9037a3a6a17a18987b92ddbec2d6f"
+        },
+        {
+            "path": "resources/scripts/assets/css/GlobalStylesheet.ts",
+            "kind": "style",
+            "purpose": "Self-hosted Inter @font-face, body letter-spacing and antialiasing, scrollbar colours.",
+            "marker": "WSS",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "f7c2fe78d7aa2e90006dc1dbcc34338e00189c23"
+        },
+        {
+            "path": "resources/views/templates/wrapper.blade.php",
+            "kind": "markup",
+            "purpose": "WSS favicons and theme-color; zoom allowed (user-scalable restored).",
+            "marker": "WSS",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "a2d218a53747d0b086cc366cf698edb9f7700f3a"
+        },
+        {
+            "path": "resources/scripts/components/auth/LoginFormContainer.tsx",
+            "kind": "markup",
+            "purpose": "Auth card: WSS mark and name instead of the mascot, dark card, WSS footer with Powered by Pterodactyl.",
+            "marker": "WSS",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "62749815bebb7196ec4e1106a41ddabbb16aa7ff"
+        },
+        {
+            "path": "resources/scripts/components/elements/Input.tsx",
+            "kind": "style",
+            "purpose": "Light (auth) input variant becomes a dark field.",
+            "marker": "WSS",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "677a5014d8c90237516e61ea95cd1866a8672c0c"
+        },
+        {
+            "path": "resources/scripts/components/elements/Label.tsx",
+            "kind": "style",
+            "purpose": "Natural-case labels with readable contrast.",
+            "marker": "WSS",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "704e8324b5bb4873c02358946af9a2076951ecdb"
+        },
+        {
+            "path": "resources/scripts/components/elements/Button.tsx",
+            "kind": "style",
+            "purpose": "Natural-case buttons; dark text on filled blue/green/red for AA contrast.",
+            "marker": "WSS",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "e02f00ff15e165548fd2ddf00a8aae918beee8cb"
+        },
+        {
+            "path": "resources/scripts/components/elements/button/style.module.css",
+            "kind": "style",
+            "purpose": "Same contrast rules for the newer button component.",
+            "marker": "WSS",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "700c67676d501bb04d2c96d0abd78a9cd27dc1c2"
+        },
+        {
+            "path": "resources/scripts/components/elements/PageContentBlock.tsx",
+            "kind": "strings",
+            "purpose": "Footer: © year Winter Storm Systems · Powered by Pterodactyl.",
+            "marker": "WSS",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "a4df19567f0557092e7a5736fd39fdce6069076e"
+        },
+        {
+            "path": "resources/scripts/components/NavigationBar.tsx",
+            "kind": "markup",
+            "purpose": "WSS mark next to the site name; flat top bar.",
+            "marker": "WSS",
+            "conflictRisk": "medium",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "6142f6268786ad91602612cc8601be7290f1b50c"
+        },
+        {
+            "path": "resources/scripts/components/server/console/Console.tsx",
+            "kind": "style",
+            "purpose": "Terminal ANSI colours mapped to the WSS palette (background follows tailwind black).",
+            "marker": "WSS",
+            "conflictRisk": "low",
+            "upstreamBase": "origin/release/v1.15.1@7d9bd9fea",
+            "upstreamBlob": "0879d20a0a5e4baf5775a39fcba84f8487cbc04b"
+        }
+    ]
+}
