@@ -6,8 +6,9 @@ export interface Props {
     hasError?: boolean;
 }
 
+// WSS: the "light" variant (auth screens only) is the WSS field on the dark sign-in card.
 const light = css<Props>`
-    ${tw`bg-white border-neutral-200 text-neutral-800`};
+    ${tw`bg-neutral-900 border-neutral-500 text-neutral-100`};
     &:focus {
         ${tw`border-primary-400`}
     }
