@@ -1,21 +1,34 @@
 import tw from 'twin.macro';
 import { createGlobalStyle } from 'styled-components/macro';
+// WSS: Inter (OFL-1.1, self-hosted from @fontsource-variable/inter 5.3.0) replaces IBM Plex Sans.
 // @ts-expect-error untyped font file
-import font from '@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2';
+import interLatin from '@/assets/wss/fonts/inter-latin-wght-normal.woff2';
+// @ts-expect-error untyped font file
+import interLatinExt from '@/assets/wss/fonts/inter-latin-ext-wght-normal.woff2';
 
 export default createGlobalStyle`
     @font-face {
-        font-family: 'IBM Plex Sans';
+        font-family: 'Inter Variable';
         font-style: normal;
         font-display: swap;
-        font-weight: 100 700;
-        src: url(${font}) format('woff2-variations');
+        font-weight: 100 900;
+        src: url(${interLatin}) format('woff2-variations');
         unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+    }
+
+    @font-face {
+        font-family: 'Inter Variable';
+        font-style: normal;
+        font-display: swap;
+        font-weight: 100 900;
+        src: url(${interLatinExt}) format('woff2-variations');
+        unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
     }
 
     body {
         ${tw`font-sans bg-neutral-800 text-neutral-200`};
-        letter-spacing: 0.015em;
+        letter-spacing: 0.005em;
+        -webkit-font-smoothing: antialiased;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -56,7 +69,7 @@ export default createGlobalStyle`
         border-right-width: 4px;
         border-left-width: 4px;
         -webkit-border-radius: 9px 4px;
-        -webkit-box-shadow: inset 0 0 0 1px hsl(211, 10%, 53%), inset 0 0 0 4px hsl(209deg 18% 30%);
+        -webkit-box-shadow: inset 0 0 0 1px #56697d, inset 0 0 0 4px #243240; /* WSS scrollbar */
     }
 
     ::-webkit-scrollbar-track-piece {

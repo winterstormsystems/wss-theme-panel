@@ -20,16 +20,17 @@ import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
 import 'xterm/css/xterm.css';
 import styles from './style.module.css';
 
+// WSS: brand-aligned ANSI colours; meaning of each colour unchanged.
 const theme = {
     background: th`colors.black`.toString(),
     cursor: 'transparent',
     black: th`colors.black`.toString(),
-    red: '#E54B4B',
-    green: '#9ECE58',
-    yellow: '#FAED70',
-    blue: '#396FE2',
+    red: '#E74C3C',
+    green: '#2ECC71',
+    yellow: '#F39C12',
+    blue: '#3498DB',
     magenta: '#BB80B3',
-    cyan: '#2DDAFD',
+    cyan: '#1ABC9C',
     white: '#d0d0d0',
     brightBlack: 'rgba(255, 255, 255, 0.2)',
     brightRed: '#FF5370',
@@ -39,7 +40,7 @@ const theme = {
     brightMagenta: '#C792EA',
     brightCyan: '#89DDFF',
     brightWhite: '#ffffff',
-    selection: '#FAF089',
+    selection: 'rgba(52, 152, 219, 0.38)',
 };
 
 const terminalProps: ITerminalOptions = {
