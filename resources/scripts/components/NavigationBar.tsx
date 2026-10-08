@@ -46,17 +46,19 @@ export default () => {
     };
 
     return (
-        <div className={'w-full bg-neutral-900 shadow-md overflow-x-auto'}>
+        <div className={'w-full bg-neutral-900 border-b border-neutral-700 overflow-x-auto'}>
             <SpinnerOverlay visible={isLoggingOut} />
             <div className={'mx-auto w-full flex items-center h-[3.5rem] max-w-[1200px]'}>
                 <div id={'logo'} className={'flex-1'}>
+                    {/* WSS: logo mark beside the site name (set the name in admin settings). */}
                     <Link
                         to={'/'}
                         className={
-                            'text-2xl font-header font-medium px-4 no-underline text-neutral-200 hover:text-neutral-100 transition-colors duration-150'
+                            'flex items-center gap-3 text-lg font-header font-semibold px-4 no-underline text-neutral-100 hover:text-white transition-colors duration-150'
                         }
                     >
-                        {name}
+                        <img src={'/wss/brand/wss-mark-40.png'} alt={''} width={28} height={28} className={'h-7 w-7'} />
+                        <span className={'truncate'}>{name}</span>
                     </Link>
                 </div>
                 <RightNavigation className={'flex h-full items-center justify-center'}>

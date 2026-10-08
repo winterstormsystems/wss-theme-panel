@@ -24,31 +24,42 @@ const Container = styled.div`
 
     ${breakpoint('xl')`
         ${tw`w-full`}
-        max-width: 700px;
     `};
+
+    max-width: 440px;
+    ${tw`mx-auto`};
 `;
 
+// WSS: Winter Storm Systems sign-in card (no mascot), WSS footer with Pterodactyl attribution.
 export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => (
     <Container>
-        {title && <h2 css={tw`text-3xl text-center text-neutral-100 font-medium py-4`}>{title}</h2>}
+        <div css={tw`flex flex-col items-center text-center pt-6 pb-2`}>
+            <img
+                src={'/wss/brand/wss-mark-80.webp'}
+                alt={''}
+                width={64}
+                height={64}
+                css={tw`block w-16 h-16 select-none`}
+            />
+            <p css={tw`mt-3 text-sm font-semibold tracking-wide text-neutral-100`}>Winter Storm Systems</p>
+            <p css={tw`text-xs text-neutral-400`}>Bot Hosting Panel</p>
+        </div>
+        {title && <h2 css={tw`text-2xl text-center text-neutral-100 font-semibold py-4`}>{title}</h2>}
         <FlashMessageRender css={tw`mb-2 px-1`} />
         <Form {...props} ref={ref}>
-            <div css={tw`md:flex w-full bg-white shadow-lg rounded-lg p-6 md:pl-0 mx-1`}>
-                <div css={tw`flex-none select-none mb-6 md:mb-0 self-center`}>
-                    <img src={'/assets/svgs/pterodactyl.svg'} css={tw`block w-48 md:w-64 mx-auto`} />
-                </div>
-                <div css={tw`flex-1`}>{props.children}</div>
+            <div css={tw`w-full bg-neutral-700 border border-neutral-600 rounded-lg p-6 md:p-8 mx-auto`}>
+                {props.children}
             </div>
         </Form>
-        <p css={tw`text-center text-neutral-500 text-xs mt-4`}>
-            &copy; 2015 - {new Date().getFullYear()}&nbsp;
+        <p css={tw`text-center text-neutral-400 text-xs mt-6`}>
+            &copy; {new Date().getFullYear()} Winter Storm Systems &middot; Powered by{' '}
             <a
                 rel={'noopener nofollow noreferrer'}
                 href={'https://pterodactyl.io'}
                 target={'_blank'}
-                css={tw`no-underline text-neutral-500 hover:text-neutral-300`}
+                css={tw`no-underline text-neutral-400 hover:text-neutral-200`}
             >
-                Pterodactyl Software
+                Pterodactyl
             </a>
         </p>
     </Container>

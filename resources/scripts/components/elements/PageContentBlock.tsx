@@ -24,17 +24,18 @@ const PageContentBlock: React.FC<PageContentBlockProps> = ({ title, showFlashKey
                     {showFlashKey && <FlashMessageRender byKey={showFlashKey} css={tw`mb-4`} />}
                     {children}
                 </ContentContainer>
+                {/* WSS: product footer; Pterodactyl stays credited (MIT; see wss/docs/V1_THEME.md). */}
                 <ContentContainer css={tw`mb-4`}>
-                    <p css={tw`text-center text-neutral-500 text-xs`}>
+                    <p css={tw`text-center text-neutral-400 text-xs`}>
+                        &copy; {new Date().getFullYear()} Winter Storm Systems &middot; Powered by{' '}
                         <a
                             rel={'noopener nofollow noreferrer'}
                             href={'https://pterodactyl.io'}
                             target={'_blank'}
-                            css={tw`no-underline text-neutral-500 hover:text-neutral-300`}
+                            css={tw`no-underline text-neutral-400 hover:text-neutral-200`}
                         >
-                            Pterodactyl&reg;
+                            Pterodactyl
                         </a>
-                        &nbsp;&copy; 2015 - {new Date().getFullYear()}
                     </p>
                 </ContentContainer>
             </>
